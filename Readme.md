@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Инесса Кузнецова](https://up.htmlacademy.ru/javascript/14/user/667135).
-* Наставник: `Неизвестно`.
+* Наставник: [Вадим Краснухин](https://htmlacademy.ru/profile/id118410).
 
 ---
 
