@@ -12,10 +12,11 @@ var TITLE = ['Большая уютная квартира',
   'Уютное бунгало далеко от моря',
   'Неуютное бунгало по колено в воде'];
 var TYPE = ['palace', 'flat', 'house', 'bungalo'];
+var TYPE_RUS = ['Дворец', 'Квартира', 'Дом', 'Бунгало'];
 var CHECKIN = ['12:00', '13:00', '14:00'];
-var CHECKOUT = CHECKIN;
+var CHECKOUT = ['12:00', '13:00', '14:00'];
 var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
-var DESCRIPTION = null;
+var DESCRIPTION = ' ';
 var PHOTOS = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg',
   'http://o0.github.io/assets/images/tokyo/hotel2.jpg',
   'http://o0.github.io/assets/images/tokyo/hotel3.jpg'];
@@ -31,25 +32,28 @@ var LOCATION_Y_MIN = 130;
 var LOCATION_Y_MAX = 630;
 var NUMBER_OF_ADS = 8;
 
-
-var getRandomNumberAddressImg = function (amount) {
-  var randomAmount = Math.floor(Math.random() * amount + 1);
-  return randomAmount;
-};
-
 var getRandomElement = function (arr) {
   return arr[Math.floor(Math.random() * (arr.length - 1))];
 };
 
+var getNumberAddressImg = function () {
+  var amounts = [];
+
+  for (var i = 1; i <= AMOUNT_ADDRESS_IMG; i++) {
+    amounts.push(i);
+  }
+  return amounts[i];
+};
+
 var getRandomInRange = function (min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+  return Math.floor(Math.random() * (max - min)) + min;
 };
 
 // Функция создающая объявления
 var createPosterData = function () {
   var listFeature = {
     author: {
-      avatar: 'img/avatars/user0' + getRandomNumberAddressImg(AMOUNT_ADDRESS_IMG) + '.png'
+      avatar: 'img/avatars/user0' + getNumberAddressImg(AMOUNT_ADDRESS_IMG) + '.png'
     },
 
     offer: {
@@ -97,7 +101,6 @@ map.classList.remove('map--faded');
 // Итоговую разметку метки .map__pin можно взять из шаблона .map__card"
 var template = document.querySelector('template');
 var pinTemplate = template.content.querySelector('.map__pin');
-var cardTemplate = template.content.querySelector('.map__card');
 
 var PIN_WIDTH = 65;
 var PIN_HEIGHT = 65;
@@ -128,11 +131,65 @@ var createPinsFragment = function (postsCount) {
   return fragment;
 };
 
-var postsCount = NUMBER_OF_ADS;
-
-similarListElement.appendChild(createPinsFragment(postsCount));
+similarListElement.appendChild(createPinsFragment(NUMBER_OF_ADS));
 
 // 5-ЫЙ ПУНКТ ЗАДАНИЯ: "На основе первого по порядку элемента из сгенерированного
 // массива и шаблона .map__card создайте DOM-элемент объявления, заполните его данными из
 // объекта и вставьте полученный DOM-элемент в блок .map перед блоком .map__filters-container:"
-// 5.1 Выведите заголовок объявления offer.title в заголовок .popup__title
+
+// Функция для перевода типа жилья на русский язык
+var getRusTypeOfHouse = function (adNumber) {
+  var type = adNumber.offer.type;
+
+  for (var i = 0; i <= (TYPE.length - 1); i++) {
+    TYPE[i].replaceContents(TYPE_RUS[i]);
+  }
+
+  return type;
+};
+
+// Функция получения описания цены в объявлении
+var getPriceHouse = function (adNumber) {
+  var price = adNumber.offer.price + '₽/ночь';
+
+  return price;
+};
+
+// Функция получения описания вместимости жилья
+var getGuestsOfHouse = function (adNumber) {
+  var rooms = adNumber.offer.rooms;
+  var guests = adNumber.offer.guests;
+
+  return rooms + ' комнаты для ' + guests + ' гостей';
+};
+
+// Функция получения описания часов заезда и выезда
+var getCheckinCheckoutTimes = function (adNumber) {
+  var checkin = 'Заезд после ' + adNumber.offer.checkin;
+  var checkout = ', выезд до ' + adNumber.offer.checkout;
+
+  return checkin + checkout;
+};
+
+
+var cardTemplate = template.content.querySelector('.map__card');
+
+// Функция создания фрагмента карточки с объявлением
+var generateInfoPromo = function (adNumber) {
+  var card = cardTemplate.cloneNode(true);
+
+  card.querySelector('.popup__title').textContent = adNumber.offer.title; // + Выводит заголовок объявления offer.title в заголовок .popup__title
+  card.querySelector('.popup__text--address').textContent = adNumber.offer.address; // + Выводит адрес offer.address в блок .popup__text--address
+  card.querySelector('.popup__text--price').textContent = getPriceHouse(adNumber); // + Выводит цену offer.price в блок .popup__text--price строкой вида {{offer.price}}₽/ночь. Например, 5200₽/ночь.
+  card.querySelector('.popup__type').textContent = getRusTypeOfHouse(adNumber); // - В блок .popup__type выведите тип жилья offer.type: Квартира для flat, Бунгало для bungalo, Дом для house, Дворец для palace
+  card.querySelector('.popup__text--capacity').textContent = getGuestsOfHouse(adNumber); // + Выведите количество гостей и комнат offer.rooms и offer.guests в блок .popup__text--capacity строкой вида {{offer.rooms}} комнаты для {{offer.guests}} гостей. Например, 2 комнаты для 3 гостей
+  card.querySelector('.popup__text--time').textContent = getCheckinCheckoutTimes(adNumber); // + Время заезда и выезда offer.checkin и offer.checkout в блок .popup__text--time строкой вида Заезд после {{offer.checkin}}, выезд до {{offer.checkout}}. Например, заезд после 14:00, выезд до 12:00.
+  card.querySelector('.popup__features').textContent = FEATURES; // + В список .popup__features выведите все доступные удобства в объявлении
+  card.querySelector('.popup__description').textContent = adNumber.offer.description; // + В блок .popup__description выведите описание объекта недвижимости offer.description
+  card.querySelector('.popup__photos').src = adNumber.offer.photos; // - В блок .popup__photos выведите все фотографии из списка offer.photos. Каждая из строк массива photos должна записываться как src соответствующего изображения
+  card.querySelector('.popup__avatar').src = adNumber.author.avatar; // + Замена src у аватарки пользователя на значения поля author.avatar
+
+  return card;
+};
+
+map.appendChild(generateInfoPromo(createPosterData()));
