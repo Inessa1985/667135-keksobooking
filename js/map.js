@@ -62,9 +62,9 @@ var getShuffledFeauters = function (arr) {
   return newArray;
 };
 
-var getFeauters = function () {
-  var randomNumberFeauters = Math.floor(Math.random() * (FEATURES.lenght - 1));
-  var shuffledArray = getShuffledFeauters(FEATURES);
+var getFeauters = function (arr) {
+  var randomNumberFeauters = Math.floor(Math.random() * (arr.length - 1));
+  var shuffledArray = getShuffledFeauters(arr);
   var feauters = '';
 
   for (var i = 0; i <= randomNumberFeauters; i++) {
@@ -94,7 +94,7 @@ var createPosterData = function () {
       guests: getRandomInRange(GUESTS_MIN, GUESTS_MAX),
       checkin: getRandomElement(CHECKIN),
       checkout: getRandomElement(CHECKOUT),
-      features: getFeauters(),
+      features: getFeauters(FEATURES),
       description: '',
       photos: PHOTOS
     },
@@ -132,7 +132,7 @@ var createPinElement = function (pinData) {
 // Функция создания фрагмента с маркерами на карте
 var createPinsFragment = function (arr) {
   var fragment = document.createDocumentFragment();
-  for (var i = 0; i < arr.lenght - 1; i++) {
+  for (var i = 0; i < arr.length; i++) {
     fragment.appendChild(createPinElement(arr[i]));
   }
 
