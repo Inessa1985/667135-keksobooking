@@ -162,24 +162,39 @@ var getTypeHouse = function (advData) {
   return russianType;
 };
 
-// Функция заполнения списка фотографий
+// Функция для создания иконок доступных удобств в объявлении
+var getFeaturesIcons = function (list, amount) {
+  var currentAdFeatures = amount.offer.features;
+  var allFeatures = FEATURES;
+
+  for (var i = 0; i < allFeatures.length; i++) {
+    if (!currentAdFeatures.includes(allFeatures[i])) {
+      var featureItem = list.querySelector('.popup__feature--' + allFeatures[i]);
+      list.removeChild(featureItem);
+    }
+  }
+};
+
 var getPhotoList = function (advData) {
   var imgFragment = document.createDocumentFragment();
+  var photos = advData.offer.photos;
 
-  for (var i = 0; i < advData.offer.photos.lenght; i++) {
+  for (var i = 0; i < photos.length; i++) {
     var imgTemplate = img.cloneNode(true);
     imgTemplate.src = advData.offer.photos[i];
-    imgFragment.appendChild(createPinElement(advData[i]));
+    imgFragment.appendChild(imgTemplate);
   }
 
   return imgFragment;
 };
 
-
 // Функция создания фрагмента карточки с объявлением
 var generateInfoPromo = function (advData) {
   var card = cardTemplate.cloneNode(true);
   var fragment = document.createDocumentFragment();
+  var featuresList = card.querySelector('.popup__features');
+  var photoTemplate = card.querySelector('.popup__photos').querySelector('.popup__photo');
+  // var photosList = card.querySelector('.popup__photos');
 
   card.querySelector('.popup__title').textContent = advData.offer.title; // Выводит заголовок объявления offer.title в заголовок .popup__title
   card.querySelector('.popup__text--address').textContent = advData.offer.address; // Выводит адрес offer.address в блок .popup__text--address
@@ -187,10 +202,11 @@ var generateInfoPromo = function (advData) {
   card.querySelector('.popup__type').textContent = getTypeHouse(advData); // Выводит в блок .popup__type выводит тип жилья offer.type: Квартира для flat, Бунгало для bungalo, Дом для house, Дворец для palace
   card.querySelector('.popup__text--capacity').textContent = advData.offer.rooms + ' комнаты для ' + advData.offer.guests + ' гостей'; // Выводит количество гостей и комнат offer.rooms и offer.guests в блок .popup__text--capacity строкой вида {{offer.rooms}} комнаты для {{offer.guests}} гостей. Например, 2 комнаты для 3 гостей
   card.querySelector('.popup__text--time').textContent = 'Заезд после ' + advData.offer.checkin + ', выезд до ' + advData.offer.checkout; // Время заезда и выезда offer.checkin и offer.checkout в блок .popup__text--time строкой вида Заезд после {{offer.checkin}}, выезд до {{offer.checkout}}. Например, заезд после 14:00, выезд до 12:00.
-  card.querySelector('.popup__features').textContent = advData.offer.features; // В список .popup__features выводит все доступные удобства в объявлении
+  getFeaturesIcons(featuresList, advData); // В список .popup__features выводит все доступные удобства в объявлении
   card.querySelector('.popup__description').textContent = advData.offer.description; // В блок .popup__description выводит описание объекта недвижимости offer.description
-  card.querySelector('.popup__description').appendChild(getPhotoList(advData)); // Вставляет в блок .popup__photos выведите все фотографии из списка offer.photos. Каждая из строк массива photos должна записываться как src соответствующего изображения
+  card.querySelector('.popup__photos').appendChild(getPhotoList(advData)); // Вставляет в блок .popup__photos выводит все фотографии из списка offer.photos. Каждая из строк массива photos должна записываться как src соответствующего изображения
   card.querySelector('.popup__avatar').src = advData.author.avatar; // Замена src у аватарки пользователя на значения поля author.avatar
+  photoTemplate.parentNode.removeChild(photoTemplate);
 
   fragment.appendChild(card);
 
