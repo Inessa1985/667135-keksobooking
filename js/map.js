@@ -47,7 +47,6 @@ var avatarNumber = 1;
 var formContent = document.querySelector('.ad-form'); // Находит форму для отправки объявления
 var formElementList = formContent.querySelectorAll('fieldset'); // Находит поля формы для отправки объявления
 var mainPin = document.querySelector('.map__pin--main');
-var regularPin = similarListElement.querySelectorAll('button');
 var addressInput = formContent.querySelector('#address'); // Находит поле адреса в нижней форме для отправки объявления
 
 // Функция получения случайного элемента
