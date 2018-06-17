@@ -26,8 +26,15 @@ var LOCATION_X_MAX = 900;
 var LOCATION_Y_MIN = 130;
 var LOCATION_Y_MAX = 630;
 var NUMBER_OF_ADS = 8;
-var PIN_WIDTH = 50;
-var PIN_HEIGHT = 70;
+var PIN_WIDTH = 50; // Ширина элемента сгенерированного маркера на карте
+var PIN_HEIGHT = 70;// Высота элемента сгенерированного маркера на карте
+var DEFAULT_MAIN_PIN_X = 570; // Координата X главной метки адреса (.map__pin--main) в неактивном состоянии
+var DEFAULT_MAIN_PIN_Y = 375; // Координата Y главной метки адреса (.map__pin--main) в неактивном состоянии
+var DEFAULT_MAIN_PIN_DIAMETER = 65; // Координата Y главной метки адреса (.map__pin--main) в неактивном состоянии
+var MAIN_PIN_WIDTH = 65; // Ширина главной метки адреса (.map__pin--main)
+var MAIN_PIN_HEIGHT = 65 + 22; // Высота главной метки адреса (.map__pin--main)
+var defaultPinCenterX = Math.round(DEFAULT_MAIN_PIN_X + DEFAULT_MAIN_PIN_DIAMETER * 0.5); // Координата центра по оси X главной метки адреса (.map__pin--main) в неактивном состоянии
+var defaultPinCenterY = Math.round(DEFAULT_MAIN_PIN_Y + DEFAULT_MAIN_PIN_DIAMETER * 0.5); // Координата центра по оси Y главной метки адреса (.map__pin--main) в неактивном состоянии
 
 var map = document.querySelector('.map');
 var template = document.querySelector('template');
@@ -37,14 +44,23 @@ var similarListElement = document.querySelector('.map__pins');
 var img = cardTemplate.cloneNode(true).querySelector('.popup__photo');
 var avatarNumber = 1;
 
+var formContent = document.querySelector('.ad-form'); // Находит форму для отправки объявления
+var formElementList = formContent.querySelectorAll('fieldset'); // Находит поля формы для отправки объявления
+var mainPin = document.querySelector('.map__pin--main');
+var regularPin = similarListElement.querySelectorAll('button');
+var addressInput = formContent.querySelector('#address'); // Находит поле адреса в нижней форме для отправки объявления
+
+// Функция получения случайного элемента
 var getRandomElement = function (arr) {
   return arr[Math.floor(Math.random() * (arr.length - 1))];
 };
 
+// Функция для получения номера аватарки пользователя
 var getNumberImg = function () {
   return avatarNumber++;
 };
 
+// Функция для получения значения между максимальным и минимальным
 var getRandomInRange = function (min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 };
@@ -73,7 +89,6 @@ var getFeauters = function (arr) {
 
   return feauters;
 };
-
 
 // Функция создающая объявления
 var createPosterData = function () {
@@ -175,6 +190,7 @@ var getFeaturesIcons = function (list, amount) {
   }
 };
 
+// Функция для создания фотографий в объявлении
 var getPhotoList = function (advData) {
   var imgFragment = document.createDocumentFragment();
   var photos = advData.offer.photos;
@@ -194,7 +210,6 @@ var generateInfoPromo = function (advData) {
   var fragment = document.createDocumentFragment();
   var featuresList = card.querySelector('.popup__features');
   var photoTemplate = card.querySelector('.popup__photos').querySelector('.popup__photo');
-  // var photosList = card.querySelector('.popup__photos');
 
   card.querySelector('.popup__title').textContent = advData.offer.title; // Выводит заголовок объявления offer.title в заголовок .popup__title
   card.querySelector('.popup__text--address').textContent = advData.offer.address; // Выводит адрес offer.address в блок .popup__text--address
@@ -206,22 +221,99 @@ var generateInfoPromo = function (advData) {
   card.querySelector('.popup__description').textContent = advData.offer.description; // В блок .popup__description выводит описание объекта недвижимости offer.description
   card.querySelector('.popup__photos').appendChild(getPhotoList(advData)); // Вставляет в блок .popup__photos выводит все фотографии из списка offer.photos. Каждая из строк массива photos должна записываться как src соответствующего изображения
   card.querySelector('.popup__avatar').src = advData.author.avatar; // Замена src у аватарки пользователя на значения поля author.avatar
-  photoTemplate.parentNode.removeChild(photoTemplate);
+  photoTemplate.parentNode.removeChild(photoTemplate); // Удаляет шаблон вставки фотографии из объявления
 
   fragment.appendChild(card);
 
   return fragment;
 };
 
+/*
 // Функция инициализирует страницу
 var init = function () {
   map.classList.remove('map--faded'); // У блока .map убирает класс .map--faded"
-
   var postersArr = createPostersAds(); // Создает массив похожих объявлений
-
   similarListElement.appendChild(createPinsFragment(postersArr));
-
   map.appendChild(generateInfoPromo(postersArr[0]));
 };
 
 init();
+*/
+
+// Функция для деактивации элементов формы в изначальном состоянии
+var disableFormElements = function (arr) {
+  for (var i = 0; i < arr.length; i++) {
+    arr[i].disabled = 'disabled';
+  }
+};
+
+// Функция возвращает активное состояние элементам формы в изначальное состояние
+var enableFormElements = function (arr) {
+  for (var i = 0; i < arr.length; i++) {
+    arr[i].disabled = '';
+  }
+};
+
+// Метод для отображения текущих координат метки на активной странице
+var updateMainPinCoordinates = function (coordinateXBefore, coordinateYBefore, targetInput) {
+  var coordinateXAfter = Math.round(coordinateXBefore - MAIN_PIN_WIDTH * 0.5);
+  var coordinateYAfter = Math.round(coordinateYBefore - MAIN_PIN_HEIGHT);
+
+  targetInput.value = coordinateXAfter.toString() + ', ' + coordinateYAfter.toString();
+};
+
+// Функция для удаления созданной карточки объявления
+var erasePromoCard = function () {
+  var previousCard = map.querySelector('.map__card');
+
+  if (!(previousCard === null)) {
+    map.removeChild(previousCard);
+  }
+};
+
+// Функция для закрытия карточки объявления с описанием
+var closeCardPopup = function () {
+  var cardCloseButton = map.querySelector('.popup__close');
+
+  cardCloseButton.addEventListener('click', function () {
+    erasePromoCard();
+  });
+};
+
+// Функция для активация страницы
+var enablePage = function () {
+  var postersArr = createPostersAds(); // Создает массив похожих объявлений
+
+  map.classList.remove('map--faded'); // У блока .map убирает класс .map--faded
+  enableFormElements(formElementList); // Активация нижней формы объявления
+  formContent.classList.remove('ad-form--disabled'); // У блока .ad-form убирает класс .ad-form--disabled (Активация формы объявления)
+  updateMainPinCoordinates(DEFAULT_MAIN_PIN_X, DEFAULT_MAIN_PIN_Y, addressInput); // Отображает текущие координаты метки на активной странице
+  similarListElement.appendChild(createPinsFragment(postersArr)); // Добавляет на карту фрагменты с маркерами
+};
+
+// Метод для отрисовки карточки предложения по клику на соответствующий пин
+var pinClickHandler = function () {
+  var renderedPinList = similarListElement.querySelectorAll('.map__pin:not(:first-of-type)');
+
+  for (var i = 0; i < 8; i++) {
+    renderedPinList[i].addEventListener('click', function () {
+      erasePromoCard(); // Удаляет предыдущую карточку объявления с описанием
+      var postersArr = createPostersAds(); // Создает массив похожих объявлений
+      map.appendChild(generateInfoPromo(postersArr[0])); // Добавляет карточку объявления с описанием
+      closeCardPopup(); // Закрывает карточку объявления с описанием
+    });
+  }
+};
+
+
+// Выводит координаты главной метки адреса (.map__pin--main) в нижней форме объявления в неактивном состоянии
+addressInput.value = defaultPinCenterX.toString() + ', ' + defaultPinCenterY.toString();
+
+// Деактивация нижней формы объявления
+disableFormElements(formElementList);
+
+// Активация сраницы при "перетаскивании" главной метки адреса (.map__pin--main)
+mainPin.addEventListener('mouseup', function () {
+  enablePage(); // Активация сраницы
+  pinClickHandler(createPostersAds()); // Отрисовывает карточку объявления по клику на соответствующий пин
+});
