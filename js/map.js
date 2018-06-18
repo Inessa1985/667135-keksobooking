@@ -291,10 +291,13 @@ var init = function () {
   disableFormElements(formElementList);
 
   // Метод активации сраницы при "перетаскивании" главной метки адреса (.map__pin--main)
-  mainPin.addEventListener('mouseup', function () {
+  var onPageActive = function () {
     enablePage(postersArr); // Активация сраницы
-    pinClickHandler(postersArr); // Отрисовывает карточку объявления по клику на соответствующий пин
-  });
+    pinClickHandler(postersArr); // Добавляет карточку объявления по клику на пин-элемент
+    mainPin.removeEventListener('mouseup', onPageActive);
+  };
+
+  mainPin.addEventListener('mouseup', onPageActive);
 };
 
 // Инициализирует страницу
