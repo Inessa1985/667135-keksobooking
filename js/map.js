@@ -28,13 +28,12 @@ var LOCATION_Y_MAX = 630;
 var NUMBER_OF_ADS = 8;
 var PIN_WIDTH = 50; // Ширина элемента сгенерированного маркера на карте
 var PIN_HEIGHT = 70;// Высота элемента сгенерированного маркера на карте
-var DEFAULT_MAIN_PIN_X = 570; // Координата X главной метки адреса (.map__pin--main) в неактивном состоянии
-var DEFAULT_MAIN_PIN_Y = 375; // Координата Y главной метки адреса (.map__pin--main) в неактивном состоянии
-var DEFAULT_MAIN_PIN_DIAMETER = 62; // Диаметр главной метки адреса (.map__pin--main) в неактивном состоянии
-// var MAIN_PIN_WIDTH = 65; // Ширина главной метки адреса (.map__pin--main)
-// var MAIN_PIN_HEIGHT = 65 + 22; // Высота главной метки адреса (.map__pin--main)
-var defaultPinCenterX = Math.round(DEFAULT_MAIN_PIN_X + DEFAULT_MAIN_PIN_DIAMETER * 0.5); // Координата центра по оси X главной метки адреса (.map__pin--main) в неактивном состоянии
-var defaultPinCenterY = Math.round(DEFAULT_MAIN_PIN_Y + DEFAULT_MAIN_PIN_DIAMETER * 0.5); // Координата центра по оси Y главной метки адреса (.map__pin--main) в неактивном состоянии
+var MAIN_PIN_X = 570; // Координата X главной метки адреса (.map__pin--main) в неактивном состоянии
+var MAIN_PIN_Y = 375; // Координата Y главной метки адреса (.map__pin--main) в неактивном состоянии
+var MAIN_PIN_WIDTH = 62; // Ширина главной метки адреса (.map__pin--main) в неактивном состоянии
+var MAIN_PIN_HEIGHT = 58; // Ширина главной метки адреса (.map__pin--main) в неактивном состоянии
+var pinCenterX = Math.round(MAIN_PIN_X + MAIN_PIN_WIDTH * 0.5); // Координата центра по оси X главной метки адреса (.map__pin--main) в неактивном состоянии
+var pinCenterY = Math.round(MAIN_PIN_Y + MAIN_PIN_HEIGHT * 0.5); // Координата центра по оси Y главной метки адреса (.map__pin--main) в неактивном состоянии
 
 var map = document.querySelector('.map');
 var template = document.querySelector('template');
@@ -286,7 +285,7 @@ var init = function () {
   var postersArr = createPostersAds();
 
   // Выводит координаты главной метки адреса (.map__pin--main) в нижней форме объявления в неактивном состоянии
-  addressInput.value = defaultPinCenterX.toString() + ', ' + defaultPinCenterY.toString();
+  addressInput.value = pinCenterX.toString() + ', ' + pinCenterY.toString();
 
   // Деактивация нижней формы объявления
   disableFormElements(formElementList);
