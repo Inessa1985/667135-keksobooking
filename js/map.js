@@ -30,9 +30,9 @@ var PIN_WIDTH = 50; // Ширина элемента сгенерированн�
 var PIN_HEIGHT = 70;// Высота элемента сгенерированного маркера на карте
 var DEFAULT_MAIN_PIN_X = 570; // Координата X главной метки адреса (.map__pin--main) в неактивном состоянии
 var DEFAULT_MAIN_PIN_Y = 375; // Координата Y главной метки адреса (.map__pin--main) в неактивном состоянии
-var DEFAULT_MAIN_PIN_DIAMETER = 65; // Координата Y главной метки адреса (.map__pin--main) в неактивном состоянии
-var MAIN_PIN_WIDTH = 65; // Ширина главной метки адреса (.map__pin--main)
-var MAIN_PIN_HEIGHT = 65 + 22; // Высота главной метки адреса (.map__pin--main)
+var DEFAULT_MAIN_PIN_DIAMETER = 62; // Диаметр главной метки адреса (.map__pin--main) в неактивном состоянии
+// var MAIN_PIN_WIDTH = 65; // Ширина главной метки адреса (.map__pin--main)
+// var MAIN_PIN_HEIGHT = 65 + 22; // Высота главной метки адреса (.map__pin--main)
 var defaultPinCenterX = Math.round(DEFAULT_MAIN_PIN_X + DEFAULT_MAIN_PIN_DIAMETER * 0.5); // Координата центра по оси X главной метки адреса (.map__pin--main) в неактивном состоянии
 var defaultPinCenterY = Math.round(DEFAULT_MAIN_PIN_Y + DEFAULT_MAIN_PIN_DIAMETER * 0.5); // Координата центра по оси Y главной метки адреса (.map__pin--main) в неактивном состоянии
 
@@ -51,7 +51,7 @@ var addressInput = formContent.querySelector('#address'); // Находит по
 
 // Функция получения случайного элемента
 var getRandomElement = function (arr) {
-  return arr[Math.floor(Math.random() * (arr.length - 1))];
+  return arr[Math.floor(Math.random() * arr.length)];
 };
 
 // Функция для получения номера аватарки пользователя
@@ -156,24 +156,19 @@ var createPinsFragment = function (arr) {
 // Функция для перевода типа жилья на русский язык
 var getTypeHouse = function (advData) {
   var type = advData.offer.type;
-  var russianType = '';
 
   switch (type) {
     case 'flat':
-      russianType = 'Квартира';
-      break;
+      return 'Квартира';
     case 'bungalo':
-      russianType = 'Бунгало';
-      break;
+      return 'Бунгало';
     case 'house':
-      russianType = 'Дом';
-      break;
+      return 'Дом';
     case 'palace':
-      russianType = 'Дворец';
-      break;
+      return 'Дворец';
   }
 
-  return russianType;
+  return type;
 };
 
 // Функция для создания иконок доступных удобств в объявлении
@@ -227,22 +222,10 @@ var generateInfoPromo = function (advData) {
   return fragment;
 };
 
-/*
-// Функция инициализирует страницу
-var init = function () {
-  map.classList.remove('map--faded'); // У блока .map убирает класс .map--faded"
-  var postersArr = createPostersAds(); // Создает массив похожих объявлений
-  similarListElement.appendChild(createPinsFragment(postersArr));
-  map.appendChild(generateInfoPromo(postersArr[0]));
-};
-
-init();
-*/
-
 // Функция для деактивации элементов формы в изначальном состоянии
 var disableFormElements = function (arr) {
   for (var i = 0; i < arr.length; i++) {
-    arr[i].disabled = 'disabled';
+    arr[i].disabled = 'true';
   }
 };
 
@@ -253,19 +236,11 @@ var enableFormElements = function (arr) {
   }
 };
 
-// Метод для отображения текущих координат метки на активной странице
-var updateMainPinCoordinates = function (coordinateXBefore, coordinateYBefore, targetInput) {
-  var coordinateXAfter = Math.round(coordinateXBefore - MAIN_PIN_WIDTH * 0.5);
-  var coordinateYAfter = Math.round(coordinateYBefore - MAIN_PIN_HEIGHT);
-
-  targetInput.value = coordinateXAfter.toString() + ', ' + coordinateYAfter.toString();
-};
-
 // Функция для удаления созданной карточки объявления
 var erasePromoCard = function () {
   var previousCard = map.querySelector('.map__card');
 
-  if (!(previousCard === null)) {
+  if (previousCard) {
     map.removeChild(previousCard);
   }
 };
@@ -280,39 +255,48 @@ var closeCardPopup = function () {
 };
 
 // Функция для активация страницы
-var enablePage = function () {
-  var postersArr = createPostersAds(); // Создает массив похожих объявлений
-
+var enablePage = function (addArray) {
   map.classList.remove('map--faded'); // У блока .map убирает класс .map--faded
   enableFormElements(formElementList); // Активация нижней формы объявления
   formContent.classList.remove('ad-form--disabled'); // У блока .ad-form убирает класс .ad-form--disabled (Активация формы объявления)
-  updateMainPinCoordinates(DEFAULT_MAIN_PIN_X, DEFAULT_MAIN_PIN_Y, addressInput); // Отображает текущие координаты метки на активной странице
-  similarListElement.appendChild(createPinsFragment(postersArr)); // Добавляет на карту фрагменты с маркерами
+  similarListElement.appendChild(createPinsFragment(addArray)); // Добавляет на карту фрагменты с маркерами
 };
 
 // Метод для отрисовки карточки предложения по клику на соответствующий пин
-var pinClickHandler = function () {
+var pinElementAddHandler = function (element, addObject) {
+  element.addEventListener('click', function () {
+    erasePromoCard(); // Удаляет предыдущую карточку объявления с описанием
+    map.appendChild(generateInfoPromo(addObject)); // Добавляет карточку объявления с описанием
+    closeCardPopup(); // Закрывает карточку объявления с описанием
+  });
+};
+
+var pinClickHandler = function (arr) {
   var renderedPinList = similarListElement.querySelectorAll('.map__pin:not(:first-of-type)');
 
-  for (var i = 0; i < 8; i++) {
-    renderedPinList[i].addEventListener('click', function () {
-      erasePromoCard(); // Удаляет предыдущую карточку объявления с описанием
-      var postersArr = createPostersAds(); // Создает массив похожих объявлений
-      map.appendChild(generateInfoPromo(postersArr[0])); // Добавляет карточку объявления с описанием
-      closeCardPopup(); // Закрывает карточку объявления с описанием
-    });
+  for (var i = 0; i < renderedPinList.length; i++) {
+    pinElementAddHandler(renderedPinList[i], arr[i]);
   }
 };
 
 
-// Выводит координаты главной метки адреса (.map__pin--main) в нижней форме объявления в неактивном состоянии
-addressInput.value = defaultPinCenterX.toString() + ', ' + defaultPinCenterY.toString();
+// Функция для инициализации страницы
+var init = function () {
+  // Создает массив похожих объявлений
+  var postersArr = createPostersAds();
 
-// Деактивация нижней формы объявления
-disableFormElements(formElementList);
+  // Выводит координаты главной метки адреса (.map__pin--main) в нижней форме объявления в неактивном состоянии
+  addressInput.value = defaultPinCenterX.toString() + ', ' + defaultPinCenterY.toString();
 
-// Активация сраницы при "перетаскивании" главной метки адреса (.map__pin--main)
-mainPin.addEventListener('mouseup', function () {
-  enablePage(); // Активация сраницы
-  pinClickHandler(createPostersAds()); // Отрисовывает карточку объявления по клику на соответствующий пин
-});
+  // Деактивация нижней формы объявления
+  disableFormElements(formElementList);
+
+  // Метод активации сраницы при "перетаскивании" главной метки адреса (.map__pin--main)
+  mainPin.addEventListener('mouseup', function () {
+    enablePage(postersArr); // Активация сраницы
+    pinClickHandler(postersArr); // Отрисовывает карточку объявления по клику на соответствующий пин
+  });
+};
+
+// Инициализирует страницу
+init();
