@@ -39,6 +39,7 @@ var MIN_PRICE_BUNGALO = 0;
 var MIN_PRICE_FLAT = 1000;
 var MIN_PRICE_HOUSE = 5000;
 var MIN_PRICE_PALACE = 10000;
+var posterArr = null;
 
 var map = document.querySelector('.map');
 var template = document.querySelector('template');
@@ -303,19 +304,19 @@ var validateCapacity = function () {
   var message = '';
   switch (selectedRooms) {
     case (1): {
-      if (selectedCapacity !== 1) {
+      if (selectedCapacity > 1) {
         message = 'Для указанного количества комнат можно выбрать количество мест: для 1 гостя';
       }
       break;
     }
     case (2): {
-      if ((selectedCapacity !== 1) || (selectedCapacity !== 2)) {
+      if ((selectedCapacity > 2)) {
         message = 'Для указанного количества комнат можно выбрать количество мест: для 1 гостя или для 2 гостей';
       }
       break;
     }
     case (3): {
-      if (selectedCapacity !== 1 || selectedCapacity !== 2 || selectedCapacity !== 3) {
+      if (selectedCapacity > 3) {
         message = 'Для указанного количества комнат можно выбрать количество мест: для 1 гостя; для 2 гостей; для 3 гостей';
       }
       break;
@@ -365,26 +366,8 @@ var checkMinPrice = function (optionsCollection, typeSelection) {
   }
 };
 
-
-// Функция для инициализации страницы
-var init = function () {
-  // Создает массив похожих объявлений
-  var postersArr = createPostersAds();
-
-  // Выводит координаты главной метки адреса (.map__pin--main) в нижней форме объявления в неактивном состоянии
-  addressInput.value = pinCenterX.toString() + ', ' + pinCenterY.toString();
-
-  // Деактивация нижней формы объявления
-  disableFormElements(formElementList);
-
-  // Метод активации сраницы при "перетаскивании" главной метки адреса (.map__pin--main)
-  var onPageActive = function () {
-    enablePage(postersArr); // Активация сраницы
-    pinClickHandler(postersArr); // Добавляет карточку объявления по клику на пин-элемент
-    mainPin.removeEventListener('mouseup', onPageActive);
-  };
-  mainPin.addEventListener('mouseup', onPageActive);
-
+// Функция подготовки формы к отправке
+var prepareForm = function () {
   // Проверка цены для дефолтного значения типа жилья
   typeSelect.addEventListener('change', function () {
     checkMinPrice(typeOptions, typeSelect);
@@ -401,6 +384,38 @@ var init = function () {
   // Синхронизация "Время заезда" и "Время выезда"
   checkinSelect.addEventListener('change', onCheckinSelectChangeHandler);
   checkoutSelect.addEventListener('change', onCheckoutSelectChangeHandler);
+};
+
+// Метод активации сраницы при "перетаскивании" главной метки адреса (.map__pin--main)
+var onPageActive = function (posterArray) {
+  enablePage(posterArray); // Активация сраницы
+  pinClickHandler(posterArray); // Добавляет карточку объявления по клику на пин-элемент
+  mainPin.removeEventListener('mouseup', onPageActive);
+};
+
+// Активация страницы
+var activatePage = function (posterArray) {
+  onPageActive(posterArray);
+  mainPin.addEventListener('mouseup', onPageActive);
+};
+
+
+// Функция для инициализации страницы
+var init = function () {
+  // Создает массив похожих объявлений
+  var posterArr = createPostersAds();
+
+  // Выводит координаты главной метки адреса (.map__pin--main) в нижней форме объявления в неактивном состоянии
+  addressInput.value = pinCenterX.toString() + ', ' + pinCenterY.toString();
+
+  // Деактивация нижней формы объявления
+  disableFormElements(formElementList);
+
+  // Активация страницы
+  activatePage(posterArr);
+
+  // Подготовка формы к отправке
+  prepareForm();
 
 };
 
