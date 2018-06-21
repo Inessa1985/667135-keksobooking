@@ -368,6 +368,9 @@ var checkMinPrice = function (optionsCollection, typeSelection) {
 
 // Функция подготовки формы к отправке
 var prepareForm = function () {
+  // Выводит координаты главной метки адреса (.map__pin--main) в нижней форме объявления в неактивном состоянии
+  addressInput.value = pinCenterX.toString() + ', ' + pinCenterY.toString();
+
   // Проверка цены для дефолтного значения типа жилья
   typeSelect.addEventListener('change', function () {
     checkMinPrice(typeOptions, typeSelect);
@@ -397,25 +400,17 @@ var onPageActive = function () {
 // Функция для инициализации страницы
 var init = function () {
 
-  // Выводит координаты главной метки адреса (.map__pin--main) в нижней форме объявления в неактивном состоянии
-  addressInput.value = pinCenterX.toString() + ', ' + pinCenterY.toString();
+  // Создает массив похожих объявлений
+  posterArr = createPostersAds();
+
+  // Подготовка формы к отправке
+  prepareForm();
 
   // Деактивация нижней формы объявления
   disableFormElements(formElementList);
 
-  // Создает массив похожих объявлений
-  posterArr = createPostersAds();
-
   // Активация страницы
-  function activatePage() {
-    onPageActive();
-    mainPin.addEventListener('mouseup', onPageActive);
-  }
-
-  activatePage();
-
-  // Подготовка формы к отправке
-  prepareForm();
+  mainPin.addEventListener('mouseup', onPageActive);
 
 };
 
