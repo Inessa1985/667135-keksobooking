@@ -296,7 +296,6 @@ var pinClickHandler = function (arr) {
   }
 };
 
-// ------------------------------------
 
 // Синхронизация "Количество комнат" и "Количество мест" (Валидация формы)
 var validateCapacity = function () {
@@ -351,19 +350,20 @@ var modifyMinPrice = function (input, minPrice) {
 };
 
 var checkMinPrice = function (optionsCollection, typeSelection) {
+  var type = optionsCollection[typeSelection.options.selectedIndex].value;
 
-  if (optionsCollection[typeSelection.options.selectedIndex].value === 'bungalo') {
-    modifyMinPrice(priceInput, MIN_PRICE_BUNGALO);
-
-  } else if (optionsCollection[typeSelection.options.selectedIndex].value === 'flat') {
-    modifyMinPrice(priceInput, MIN_PRICE_FLAT);
-
-  } else if (optionsCollection[typeSelection.options.selectedIndex].value === 'house') {
-    modifyMinPrice(priceInput, MIN_PRICE_HOUSE);
-
-  } else if (optionsCollection[typeSelection.options.selectedIndex].value === 'palace') {
-    modifyMinPrice(priceInput, MIN_PRICE_PALACE);
+  switch (type) {
+    case 'bungalo':
+      return modifyMinPrice(priceInput, MIN_PRICE_BUNGALO);
+    case 'flat':
+      return modifyMinPrice(priceInput, MIN_PRICE_FLAT);
+    case 'house':
+      return modifyMinPrice(priceInput, MIN_PRICE_HOUSE);
+    case 'palace':
+      return modifyMinPrice(priceInput, MIN_PRICE_PALACE);
   }
+
+  return type;
 };
 
 // Функция подготовки формы к отправке
@@ -387,23 +387,15 @@ var prepareForm = function () {
 };
 
 // Метод активации сраницы при "перетаскивании" главной метки адреса (.map__pin--main)
-var onPageActive = function (posterArray) {
-  enablePage(posterArray); // Активация сраницы
-  pinClickHandler(posterArray); // Добавляет карточку объявления по клику на пин-элемент
+var onPageActive = function () {
+  enablePage(posterArr); // Активация сраницы
+  pinClickHandler(posterArr); // Добавляет карточку объявления по клику на пин-элемент
   mainPin.removeEventListener('mouseup', onPageActive);
-};
-
-// Активация страницы
-var activatePage = function (posterArray) {
-  onPageActive(posterArray);
-  mainPin.addEventListener('mouseup', onPageActive);
 };
 
 
 // Функция для инициализации страницы
 var init = function () {
-  // Создает массив похожих объявлений
-  var posterArr = createPostersAds();
 
   // Выводит координаты главной метки адреса (.map__pin--main) в нижней форме объявления в неактивном состоянии
   addressInput.value = pinCenterX.toString() + ', ' + pinCenterY.toString();
@@ -411,8 +403,16 @@ var init = function () {
   // Деактивация нижней формы объявления
   disableFormElements(formElementList);
 
+  // Создает массив похожих объявлений
+  posterArr = createPostersAds();
+
   // Активация страницы
-  activatePage(posterArr);
+  function activatePage() {
+    onPageActive();
+    mainPin.addEventListener('mouseup', onPageActive);
+  }
+
+  activatePage();
 
   // Подготовка формы к отправке
   prepareForm();
