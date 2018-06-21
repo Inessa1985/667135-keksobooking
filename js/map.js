@@ -32,8 +32,14 @@ var MAIN_PIN_X = 570; // Координата X главной метки адр
 var MAIN_PIN_Y = 375; // Координата Y главной метки адреса (.map__pin--main) в неактивном состоянии
 var MAIN_PIN_WIDTH = 62; // Ширина главной метки адреса (.map__pin--main) в неактивном состоянии
 var MAIN_PIN_HEIGHT = 58; // Ширина главной метки адреса (.map__pin--main) в неактивном состоянии
+// var ESC_KEYCODE = 27;
 var pinCenterX = Math.round(MAIN_PIN_X + MAIN_PIN_WIDTH * 0.5); // Координата центра по оси X главной метки адреса (.map__pin--main) в неактивном состоянии
 var pinCenterY = Math.round(MAIN_PIN_Y + MAIN_PIN_HEIGHT * 0.5); // Координата центра по оси Y главной метки адреса (.map__pin--main) в неактивном состоянии
+var MIN_PRICE_BUNGALO = 0;
+var MIN_PRICE_FLAT = 1000;
+var MIN_PRICE_HOUSE = 5000;
+var MIN_PRICE_PALACE = 10000;
+var posterArr = null;
 
 var map = document.querySelector('.map');
 var template = document.querySelector('template');
@@ -47,6 +53,18 @@ var formContent = document.querySelector('.ad-form'); // Находит форм
 var formElementList = formContent.querySelectorAll('fieldset'); // Находит поля формы для отправки объявления
 var mainPin = document.querySelector('.map__pin--main');
 var addressInput = formContent.querySelector('#address'); // Находит поле адреса в нижней форме для отправки объявления
+var typeSelect = formContent.querySelector('#type'); // Находит поле "Тип жилья"
+var typeOptions = typeSelect.querySelectorAll('option'); // Находит все 'option' поля "Тип жилья"
+var priceInput = formContent.querySelector('#price'); // Находит поле "Цена за ночь"
+var roomsSelect = formContent.querySelector('#room_number'); // Находит поле "Кол-во комнат"
+var capacitySelect = formContent.querySelector('#capacity'); // Находит поле "Количество мест"
+var selectedRooms = Number(roomsSelect.value); // Приводит значение поля "Кол-во комнат" к числовому
+var checkinSelect = formContent.querySelector('#timein'); // Находит поле "Время заезда"
+var checkoutSelect = formContent.querySelector('#timeout'); // Находит поле "Время выезда"
+// var submitBtn = formContent.querySelector('.ad-form__submit'); // Находит кнопку "Опубликовать"
+// var resetBtn = formContent.querySelector('.ad-form__reset'); // Находит кнопку сброса формы "очистить"
+// var successPopup = document.querySelector('.success'); // Находит сообщение об успешной отправки формы
+
 
 // Функция получения случайного элемента
 var getRandomElement = function (arr) {
@@ -279,25 +297,121 @@ var pinClickHandler = function (arr) {
 };
 
 
-// Функция для инициализации страницы
-var init = function () {
-  // Создает массив похожих объявлений
-  var postersArr = createPostersAds();
+// Синхронизация "Количество комнат" и "Количество мест" (Валидация формы)
+var validateCapacity = function () {
+  var selectedCapacity = Number(capacitySelect.value);
+  var message = '';
+  switch (selectedRooms) {
+    case (1): {
+      if (selectedCapacity > 1) {
+        message = 'Для указанного количества комнат можно выбрать количество мест: для 1 гостя';
+      }
+      break;
+    }
+    case (2): {
+      if ((selectedCapacity > 2)) {
+        message = 'Для указанного количества комнат можно выбрать количество мест: для 1 гостя или для 2 гостей';
+      }
+      break;
+    }
+    case (3): {
+      if (selectedCapacity > 3) {
+        message = 'Для указанного количества комнат можно выбрать количество мест: для 1 гостя; для 2 гостей; для 3 гостей';
+      }
+      break;
+    }
+    case (100): {
+      if (selectedCapacity !== 100) {
+        message = 'Для указанного количества комнат можно выбрать количество мест: не для гостей';
+      }
+      break;
+    }
+  }
+  capacitySelect.setCustomValidity(message);
+};
 
+// Синхронизация "Время заезда" и "Время выезда"
+var changeCheckTime = function (checkField, index) {
+  checkField.selectedIndex = index;
+};
+
+var onCheckinSelectChangeHandler = function () {
+  changeCheckTime(checkoutSelect, checkinSelect.selectedIndex);
+};
+
+var onCheckoutSelectChangeHandler = function () {
+  changeCheckTime(checkinSelect, checkoutSelect.selectedIndex);
+};
+
+// Зависимость минимально допустимой цены предложения от типа жилья
+var modifyMinPrice = function (input, minPrice) {
+  input.min = minPrice;
+  input.placeholder = minPrice;
+};
+
+var checkMinPrice = function (optionsCollection, typeSelection) {
+  var type = optionsCollection[typeSelection.options.selectedIndex].value;
+
+  switch (type) {
+    case 'bungalo':
+      return modifyMinPrice(priceInput, MIN_PRICE_BUNGALO);
+    case 'flat':
+      return modifyMinPrice(priceInput, MIN_PRICE_FLAT);
+    case 'house':
+      return modifyMinPrice(priceInput, MIN_PRICE_HOUSE);
+    case 'palace':
+      return modifyMinPrice(priceInput, MIN_PRICE_PALACE);
+  }
+
+  return type;
+};
+
+// Функция подготовки формы к отправке
+var prepareForm = function () {
   // Выводит координаты главной метки адреса (.map__pin--main) в нижней форме объявления в неактивном состоянии
   addressInput.value = pinCenterX.toString() + ', ' + pinCenterY.toString();
+
+  // Проверка цены для дефолтного значения типа жилья
+  typeSelect.addEventListener('change', function () {
+    checkMinPrice(typeOptions, typeSelect);
+  });
+
+  // Синхронизация "Количество комнат" и "Количество мест" (Валидация формы)
+  validateCapacity();
+  capacitySelect.addEventListener('change', validateCapacity);
+  roomsSelect.addEventListener('change', function () {
+    selectedRooms = Number(roomsSelect.value);
+    validateCapacity();
+  });
+
+  // Синхронизация "Время заезда" и "Время выезда"
+  checkinSelect.addEventListener('change', onCheckinSelectChangeHandler);
+  checkoutSelect.addEventListener('change', onCheckoutSelectChangeHandler);
+};
+
+// Метод активации сраницы при "перетаскивании" главной метки адреса (.map__pin--main)
+var onPageActive = function () {
+  enablePage(posterArr); // Активация сраницы
+  pinClickHandler(posterArr); // Добавляет карточку объявления по клику на пин-элемент
+  mainPin.removeEventListener('mouseup', onPageActive);
+};
+
+
+// Функция для инициализации страницы
+var init = function () {
+
+  // Создает массив похожих объявлений
+  posterArr = createPostersAds();
+
+  // Подготовка формы к отправке
+  prepareForm();
 
   // Деактивация нижней формы объявления
   disableFormElements(formElementList);
 
-  // Метод активации сраницы при "перетаскивании" главной метки адреса (.map__pin--main)
-  var onPageActive = function () {
-    enablePage(postersArr); // Активация сраницы
-    pinClickHandler(postersArr); // Добавляет карточку объявления по клику на пин-элемент
-    mainPin.removeEventListener('mouseup', onPageActive);
-  };
-
+  // Активация страницы
   mainPin.addEventListener('mouseup', onPageActive);
+
 };
 
 // Инициализирует страницу
