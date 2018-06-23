@@ -31,7 +31,8 @@ var PIN_HEIGHT = 70;// Высота элемента сгенерированн�
 // var MAIN_PIN_X = 570; // Координата X главной метки адреса (.map__pin--main) в неактивном состоянии
 // var MAIN_PIN_Y = 375; // Координата Y главной метки адреса (.map__pin--main) в неактивном состоянии
 var MAIN_PIN_WIDTH = 62; // Ширина главной метки адреса (.map__pin--main) в неактивном состоянии
-var MAIN_PIN_HEIGHT = 58; // Ширина главной метки адреса (.map__pin--main) в неактивном состоянии
+var MAIN_PIN_HEIGHT = 58; // Высота главной метки адреса (.map__pin--main) в неактивном состоянии
+var MAIN_PIN_END_HEIGHT = 22; // Высота хвостика главной метки адреса (.map__pin--main) в активном состоянии
 // var ESC_KEYCODE = 27;
 // var pinCenterX = Math.round(MAIN_PIN_X + MAIN_PIN_WIDTH * 0.5); // Координата центра по оси X главной метки адреса (.map__pin--main) в неактивном состоянии
 // var pinCenterY = Math.round(MAIN_PIN_Y + MAIN_PIN_HEIGHT * 0.5); // Координата центра по оси Y главной метки адреса (.map__pin--main) в неактивном состоянии
@@ -323,7 +324,7 @@ var validateCapacity = function () {
       break;
     }
     case (100): {
-      if (selectedCapacity !== 100) {
+      if (selectedCapacity !== 0) {
         message = 'Для указанного количества комнат можно выбрать количество мест: не для гостей';
       }
       break;
@@ -378,7 +379,7 @@ var calculateAddress = function () {
   var pinX = parseInt(mainPin.style.left, 10) + MAIN_PIN_WIDTH / 2;
   var pinY = parseInt(mainPin.style.top, 10) + MAIN_PIN_HEIGHT / 2;
   if (isMapActive()) {
-    pinY += MAIN_PIN_HEIGHT / 2 + 22;
+    pinY += MAIN_PIN_HEIGHT / 2 + MAIN_PIN_END_HEIGHT;
   }
   return Math.round(pinX) + ', ' + Math.round(pinY);
 };
