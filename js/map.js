@@ -449,11 +449,9 @@ mainPin.addEventListener('mousedown', function (event) {
     y: event.clientY
   };
 
-  var dragged = false;
-
   var onMouseMove = function (moveEvt) {
     moveEvt.preventDefault();
-    dragged = true;
+    // dragged = true;
     var mapPinParent = mainPin.offsetParent;
 
     var shift = {
@@ -503,16 +501,8 @@ mainPin.addEventListener('mousedown', function (event) {
     document.removeEventListener('mousemove', onMouseMove);
     document.removeEventListener('mouseup', onMouseUp);
 
-    if (dragged) {
-      var onClickPreventDefault = function (clickEvt) {
-        clickEvt.preventDefault();
-        mainPin.removeEventListener('click', onClickPreventDefault);
-      };
-      mainPin.addEventListener('click', onClickPreventDefault);
-    }
+    getAddressFromPin();
   };
-
-  getAddressFromPin();
 
   document.addEventListener('mousemove', onMouseMove);
   document.addEventListener('mouseup', onMouseUp);
