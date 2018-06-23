@@ -28,14 +28,10 @@ var LOCATION_Y_MAX = 630;
 var NUMBER_OF_ADS = 8;
 var PIN_WIDTH = 50; // Ширина элемента сгенерированного маркера на карте
 var PIN_HEIGHT = 70;// Высота элемента сгенерированного маркера на карте
-// var MAIN_PIN_X = 570; // Координата X главной метки адреса (.map__pin--main) в неактивном состоянии
-// var MAIN_PIN_Y = 375; // Координата Y главной метки адреса (.map__pin--main) в неактивном состоянии
 var MAIN_PIN_WIDTH = 62; // Ширина главной метки адреса (.map__pin--main) в неактивном состоянии
 var MAIN_PIN_HEIGHT = 58; // Высота главной метки адреса (.map__pin--main) в неактивном состоянии
 var MAIN_PIN_END_HEIGHT = 22; // Высота хвостика главной метки адреса (.map__pin--main) в активном состоянии
 // var ESC_KEYCODE = 27;
-// var pinCenterX = Math.round(MAIN_PIN_X + MAIN_PIN_WIDTH * 0.5); // Координата центра по оси X главной метки адреса (.map__pin--main) в неактивном состоянии
-// var pinCenterY = Math.round(MAIN_PIN_Y + MAIN_PIN_HEIGHT * 0.5); // Координата центра по оси Y главной метки адреса (.map__pin--main) в неактивном состоянии
 var MIN_PRICE_BUNGALO = 0;
 var MIN_PRICE_FLAT = 1000;
 var MIN_PRICE_HOUSE = 5000;
@@ -64,9 +60,6 @@ var capacitySelect = formContent.querySelector('#capacity'); // Находит �
 var selectedRooms = Number(roomsSelect.value); // Приводит значение поля "Кол-во комнат" к числовому
 var checkinSelect = formContent.querySelector('#timein'); // Находит поле "Время заезда"
 var checkoutSelect = formContent.querySelector('#timeout'); // Находит поле "Время выезда"
-// var submitBtn = formContent.querySelector('.ad-form__submit'); // Находит кнопку "Опубликовать"
-// var resetBtn = formContent.querySelector('.ad-form__reset'); // Находит кнопку сброса формы "очистить"
-// var successPopup = document.querySelector('.success'); // Находит сообщение об успешной отправки формы
 
 
 // Функция получения случайного элемента
@@ -392,7 +385,6 @@ var getAddressFromPin = function () {
 // Функция подготовки формы к отправке
 var prepareForm = function () {
   // Выводит координаты главной метки адреса (.map__pin--main) в нижней форме объявления в неактивном состоянии
-  // addressInput.value = pinCenterX.toString() + ', ' + pinCenterY.toString();
   getAddressFromPin();
 
   // Проверка цены для дефолтного значения типа жилья
@@ -451,7 +443,6 @@ mainPin.addEventListener('mousedown', function (event) {
 
   var onMouseMove = function (moveEvt) {
     moveEvt.preventDefault();
-    // dragged = true;
     var mapPinParent = mainPin.offsetParent;
 
     var shift = {
