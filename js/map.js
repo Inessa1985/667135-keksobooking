@@ -40,6 +40,8 @@ var MIN_PRICE_FLAT = 1000;
 var MIN_PRICE_HOUSE = 5000;
 var MIN_PRICE_PALACE = 10000;
 var posterArr = null;
+var TOP_LIMIT = 130; // Верхняя граница ограничения передвижения маркера на карте
+var BOTTOM_LIMIT = 630; // Нижняя граница ограничения передвижения маркера на карте
 
 var map = document.querySelector('.map');
 var template = document.querySelector('template');
@@ -416,3 +418,78 @@ var init = function () {
 
 // Инициализирует страницу
 init();
+
+// Метод перетаскивания главной метки
+mainPin.addEventListener('mousedown', function (event) {
+  event.preventDefault();
+  var startCoords = {
+    x: event.clientX,
+    y: event.clientY
+  };
+
+  var dragged = false;
+
+  var onMouseMove = function (moveEvt) {
+    moveEvt.preventDefault();
+    dragged = true;
+    var mapPinParent = mainPin.offsetParent;
+
+    var shift = {
+      x: startCoords.x - moveEvt.clientX,
+      y: startCoords.y - moveEvt.clientY
+    };
+
+    startCoords = {
+      x: moveEvt.clientX,
+      y: moveEvt.clientY
+    };
+
+    var limits = {
+      top: TOP_LIMIT - MAIN_PIN_HEIGHT,
+      bottom: BOTTOM_LIMIT - MAIN_PIN_HEIGHT,
+      left: mapPinParent.offsetLeft,
+      right: mapPinParent.offsetWidth - MAIN_PIN_WIDTH
+    };
+
+    var calculateNewCoords = function () {
+      var newCoords = {
+        x: mainPin.offsetLeft - shift.x,
+        y: mainPin.offsetTop - shift.y
+      };
+      if (mainPin.offsetLeft - shift.x > limits.right) {
+        newCoords.x = limits.right;
+      }
+      if (mainPin.offsetLeft - shift.x < limits.left) {
+        newCoords.x = limits.left;
+      }
+      if (mainPin.offsetTop - shift.y > limits.bottom) {
+        newCoords.y = limits.bottom;
+      }
+      if (mainPin.offsetTop - shift.y < limits.top) {
+        newCoords.y = limits.top;
+      }
+      return newCoords;
+    };
+
+    var newMapPinCoords = calculateNewCoords();
+    mainPin.style.left = newMapPinCoords.x + 'px';
+    mainPin.style.top = newMapPinCoords.y + 'px';
+  };
+
+  var onMouseUp = function (upEvt) {
+    upEvt.preventDefault();
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+
+    if (dragged) {
+      var onClickPreventDefault = function (clickEvt) {
+        clickEvt.preventDefault();
+        mainPin.removeEventListener('click', onClickPreventDefault);
+      };
+      mainPin.addEventListener('click', onClickPreventDefault);
+    }
+  };
+
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup', onMouseUp);
+});
