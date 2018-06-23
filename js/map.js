@@ -28,18 +28,17 @@ var LOCATION_Y_MAX = 630;
 var NUMBER_OF_ADS = 8;
 var PIN_WIDTH = 50; // Ширина элемента сгенерированного маркера на карте
 var PIN_HEIGHT = 70;// Высота элемента сгенерированного маркера на карте
-var MAIN_PIN_X = 570; // Координата X главной метки адреса (.map__pin--main) в неактивном состоянии
-var MAIN_PIN_Y = 375; // Координата Y главной метки адреса (.map__pin--main) в неактивном состоянии
 var MAIN_PIN_WIDTH = 62; // Ширина главной метки адреса (.map__pin--main) в неактивном состоянии
-var MAIN_PIN_HEIGHT = 58; // Ширина главной метки адреса (.map__pin--main) в неактивном состоянии
+var MAIN_PIN_HEIGHT = 58; // Высота главной метки адреса (.map__pin--main) в неактивном состоянии
+var MAIN_PIN_END_HEIGHT = 22; // Высота хвостика главной метки адреса (.map__pin--main) в активном состоянии
 // var ESC_KEYCODE = 27;
-var pinCenterX = Math.round(MAIN_PIN_X + MAIN_PIN_WIDTH * 0.5); // Координата центра по оси X главной метки адреса (.map__pin--main) в неактивном состоянии
-var pinCenterY = Math.round(MAIN_PIN_Y + MAIN_PIN_HEIGHT * 0.5); // Координата центра по оси Y главной метки адреса (.map__pin--main) в неактивном состоянии
 var MIN_PRICE_BUNGALO = 0;
 var MIN_PRICE_FLAT = 1000;
 var MIN_PRICE_HOUSE = 5000;
 var MIN_PRICE_PALACE = 10000;
 var posterArr = null;
+var TOP_LIMIT = 130; // Верхняя граница ограничения передвижения маркера на карте
+var BOTTOM_LIMIT = 630; // Нижняя граница ограничения передвижения маркера на карте
 
 var map = document.querySelector('.map');
 var template = document.querySelector('template');
@@ -61,9 +60,6 @@ var capacitySelect = formContent.querySelector('#capacity'); // Находит �
 var selectedRooms = Number(roomsSelect.value); // Приводит значение поля "Кол-во комнат" к числовому
 var checkinSelect = formContent.querySelector('#timein'); // Находит поле "Время заезда"
 var checkoutSelect = formContent.querySelector('#timeout'); // Находит поле "Время выезда"
-// var submitBtn = formContent.querySelector('.ad-form__submit'); // Находит кнопку "Опубликовать"
-// var resetBtn = formContent.querySelector('.ad-form__reset'); // Находит кнопку сброса формы "очистить"
-// var successPopup = document.querySelector('.success'); // Находит сообщение об успешной отправки формы
 
 
 // Функция получения случайного элемента
@@ -321,7 +317,7 @@ var validateCapacity = function () {
       break;
     }
     case (100): {
-      if (selectedCapacity !== 100) {
+      if (selectedCapacity !== 0) {
         message = 'Для указанного количества комнат можно выбрать количество мест: не для гостей';
       }
       break;
@@ -366,10 +362,30 @@ var checkMinPrice = function (optionsCollection, typeSelection) {
   return type;
 };
 
+
+// Функции добавляют в поле адреса координаты метки
+var isMapActive = function () {
+  return !(map.classList.contains('map--faded'));
+};
+
+var calculateAddress = function () {
+  var pinX = parseInt(mainPin.style.left, 10) + MAIN_PIN_WIDTH / 2;
+  var pinY = parseInt(mainPin.style.top, 10) + MAIN_PIN_HEIGHT / 2;
+  if (isMapActive()) {
+    pinY += MAIN_PIN_HEIGHT / 2 + MAIN_PIN_END_HEIGHT;
+  }
+  return Math.round(pinX) + ', ' + Math.round(pinY);
+};
+
+var getAddressFromPin = function () {
+  var addressValue = calculateAddress();
+  addressInput.value = addressValue;
+};
+
 // Функция подготовки формы к отправке
 var prepareForm = function () {
   // Выводит координаты главной метки адреса (.map__pin--main) в нижней форме объявления в неактивном состоянии
-  addressInput.value = pinCenterX.toString() + ', ' + pinCenterY.toString();
+  getAddressFromPin();
 
   // Проверка цены для дефолтного значения типа жилья
   typeSelect.addEventListener('change', function () {
@@ -416,3 +432,69 @@ var init = function () {
 
 // Инициализирует страницу
 init();
+
+// Метод перетаскивания главной метки
+mainPin.addEventListener('mousedown', function (event) {
+  event.preventDefault();
+  var startCoords = {
+    x: event.clientX,
+    y: event.clientY
+  };
+
+  var onMouseMove = function (moveEvt) {
+    moveEvt.preventDefault();
+    var mapPinParent = mainPin.offsetParent;
+
+    var shift = {
+      x: startCoords.x - moveEvt.clientX,
+      y: startCoords.y - moveEvt.clientY
+    };
+
+    startCoords = {
+      x: moveEvt.clientX,
+      y: moveEvt.clientY
+    };
+
+    var limits = {
+      top: TOP_LIMIT - MAIN_PIN_HEIGHT,
+      bottom: BOTTOM_LIMIT - MAIN_PIN_HEIGHT,
+      left: mapPinParent.offsetLeft,
+      right: mapPinParent.offsetWidth - MAIN_PIN_WIDTH
+    };
+
+    var calculateNewCoords = function () {
+      var newCoords = {
+        x: mainPin.offsetLeft - shift.x,
+        y: mainPin.offsetTop - shift.y
+      };
+      if (mainPin.offsetLeft - shift.x > limits.right) {
+        newCoords.x = limits.right;
+      }
+      if (mainPin.offsetLeft - shift.x < limits.left) {
+        newCoords.x = limits.left;
+      }
+      if (mainPin.offsetTop - shift.y > limits.bottom) {
+        newCoords.y = limits.bottom;
+      }
+      if (mainPin.offsetTop - shift.y < limits.top) {
+        newCoords.y = limits.top;
+      }
+      return newCoords;
+    };
+
+    var newMapPinCoords = calculateNewCoords();
+    mainPin.style.left = newMapPinCoords.x + 'px';
+    mainPin.style.top = newMapPinCoords.y + 'px';
+  };
+
+  var onMouseUp = function (upEvt) {
+    upEvt.preventDefault();
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+
+    getAddressFromPin();
+  };
+
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup', onMouseUp);
+});
