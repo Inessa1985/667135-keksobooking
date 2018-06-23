@@ -28,13 +28,13 @@ var LOCATION_Y_MAX = 630;
 var NUMBER_OF_ADS = 8;
 var PIN_WIDTH = 50; // Ширина элемента сгенерированного маркера на карте
 var PIN_HEIGHT = 70;// Высота элемента сгенерированного маркера на карте
-var MAIN_PIN_X = 570; // Координата X главной метки адреса (.map__pin--main) в неактивном состоянии
-var MAIN_PIN_Y = 375; // Координата Y главной метки адреса (.map__pin--main) в неактивном состоянии
+// var MAIN_PIN_X = 570; // Координата X главной метки адреса (.map__pin--main) в неактивном состоянии
+// var MAIN_PIN_Y = 375; // Координата Y главной метки адреса (.map__pin--main) в неактивном состоянии
 var MAIN_PIN_WIDTH = 62; // Ширина главной метки адреса (.map__pin--main) в неактивном состоянии
 var MAIN_PIN_HEIGHT = 58; // Ширина главной метки адреса (.map__pin--main) в неактивном состоянии
 // var ESC_KEYCODE = 27;
-var pinCenterX = Math.round(MAIN_PIN_X + MAIN_PIN_WIDTH * 0.5); // Координата центра по оси X главной метки адреса (.map__pin--main) в неактивном состоянии
-var pinCenterY = Math.round(MAIN_PIN_Y + MAIN_PIN_HEIGHT * 0.5); // Координата центра по оси Y главной метки адреса (.map__pin--main) в неактивном состоянии
+// var pinCenterX = Math.round(MAIN_PIN_X + MAIN_PIN_WIDTH * 0.5); // Координата центра по оси X главной метки адреса (.map__pin--main) в неактивном состоянии
+// var pinCenterY = Math.round(MAIN_PIN_Y + MAIN_PIN_HEIGHT * 0.5); // Координата центра по оси Y главной метки адреса (.map__pin--main) в неактивном состоянии
 var MIN_PRICE_BUNGALO = 0;
 var MIN_PRICE_FLAT = 1000;
 var MIN_PRICE_HOUSE = 5000;
@@ -368,10 +368,31 @@ var checkMinPrice = function (optionsCollection, typeSelection) {
   return type;
 };
 
+
+// Функции добавляют в поле адреса координаты метки
+var isMapActive = function () {
+  return !(map.classList.contains('map--faded'));
+};
+
+var calculateAddress = function () {
+  var pinX = parseInt(mainPin.style.left, 10) + MAIN_PIN_WIDTH / 2;
+  var pinY = parseInt(mainPin.style.top, 10) + MAIN_PIN_HEIGHT / 2;
+  if (isMapActive()) {
+    pinY += MAIN_PIN_HEIGHT / 2 + 22;
+  }
+  return Math.round(pinX) + ', ' + Math.round(pinY);
+};
+
+var getAddressFromPin = function () {
+  var addressValue = calculateAddress();
+  addressInput.value = addressValue;
+};
+
 // Функция подготовки формы к отправке
 var prepareForm = function () {
   // Выводит координаты главной метки адреса (.map__pin--main) в нижней форме объявления в неактивном состоянии
-  addressInput.value = pinCenterX.toString() + ', ' + pinCenterY.toString();
+  // addressInput.value = pinCenterX.toString() + ', ' + pinCenterY.toString();
+  getAddressFromPin();
 
   // Проверка цены для дефолтного значения типа жилья
   typeSelect.addEventListener('change', function () {
@@ -489,6 +510,8 @@ mainPin.addEventListener('mousedown', function (event) {
       mainPin.addEventListener('click', onClickPreventDefault);
     }
   };
+
+  getAddressFromPin();
 
   document.addEventListener('mousemove', onMouseMove);
   document.addEventListener('mouseup', onMouseUp);
