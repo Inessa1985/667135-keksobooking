@@ -15,13 +15,6 @@
   var mainPin = document.querySelector('.map__pin--main');
 
 
-  // Функция для деактивации элементов формы в изначальном состоянии
-  var disableFormElements = function (arr) {
-    for (var i = 0; i < arr.length; i++) {
-      arr[i].disabled = 'true';
-    }
-  };
-
   // Функция возвращает активное состояние элементам формы в изначальное состояние
   var enableFormElements = function (arr) {
     for (var i = 0; i < arr.length; i++) {
@@ -80,6 +73,77 @@
     mainPin.removeEventListener('mouseup', onPageActive);
   };
 
+  // Функция взаимодействия страницы и главной метки
+  var clickMainPin = function () {
+    // Активация страницы
+    mainPin.addEventListener('mouseup', onPageActive);
+
+    // Метод перетаскивания главной метки
+    mainPin.addEventListener('mousedown', function (event) {
+      event.preventDefault();
+      var startCoords = {
+        x: event.clientX,
+        y: event.clientY
+      };
+
+      var onMouseMove = function (moveEvt) {
+        moveEvt.preventDefault();
+        var mapPinParent = mainPin.offsetParent;
+
+        var shift = {
+          x: startCoords.x - moveEvt.clientX,
+          y: startCoords.y - moveEvt.clientY
+        };
+
+        startCoords = {
+          x: moveEvt.clientX,
+          y: moveEvt.clientY
+        };
+
+        var limits = {
+          top: TOP_LIMIT - MAIN_PIN_HEIGHT,
+          bottom: BOTTOM_LIMIT - MAIN_PIN_HEIGHT,
+          left: mapPinParent.offsetLeft,
+          right: mapPinParent.offsetWidth - MAIN_PIN_WIDTH
+        };
+
+        var calculateNewCoords = function () {
+          var newCoords = {
+            x: mainPin.offsetLeft - shift.x,
+            y: mainPin.offsetTop - shift.y
+          };
+          if (mainPin.offsetLeft - shift.x > limits.right) {
+            newCoords.x = limits.right;
+          }
+          if (mainPin.offsetLeft - shift.x < limits.left) {
+            newCoords.x = limits.left;
+          }
+          if (mainPin.offsetTop - shift.y > limits.bottom) {
+            newCoords.y = limits.bottom;
+          }
+          if (mainPin.offsetTop - shift.y < limits.top) {
+            newCoords.y = limits.top;
+          }
+          return newCoords;
+        };
+
+        var newMapPinCoords = calculateNewCoords();
+        mainPin.style.left = newMapPinCoords.x + 'px';
+        mainPin.style.top = newMapPinCoords.y + 'px';
+      };
+
+      var onMouseUp = function (upEvt) {
+        upEvt.preventDefault();
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+
+        window.form.getAddressFromPin();
+      };
+
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mouseup', onMouseUp);
+    });
+  };
 
   // Функция для инициализации страницы
   var init = function () {
@@ -91,79 +155,14 @@
     window.form.prepareForm();
 
     // Деактивация нижней формы объявления
-    disableFormElements(formElementList);
+    window.form.disableFormElements(formElementList);
 
-    // Активация страницы
-    mainPin.addEventListener('mouseup', onPageActive);
+    // Активация страницы и претаскивание главной метки
+    clickMainPin();
 
   };
 
   // Инициализирует страницу
   init();
 
-  // Метод перетаскивания главной метки
-  mainPin.addEventListener('mousedown', function (event) {
-    event.preventDefault();
-    var startCoords = {
-      x: event.clientX,
-      y: event.clientY
-    };
-
-    var onMouseMove = function (moveEvt) {
-      moveEvt.preventDefault();
-      var mapPinParent = mainPin.offsetParent;
-
-      var shift = {
-        x: startCoords.x - moveEvt.clientX,
-        y: startCoords.y - moveEvt.clientY
-      };
-
-      startCoords = {
-        x: moveEvt.clientX,
-        y: moveEvt.clientY
-      };
-
-      var limits = {
-        top: TOP_LIMIT - MAIN_PIN_HEIGHT,
-        bottom: BOTTOM_LIMIT - MAIN_PIN_HEIGHT,
-        left: mapPinParent.offsetLeft,
-        right: mapPinParent.offsetWidth - MAIN_PIN_WIDTH
-      };
-
-      var calculateNewCoords = function () {
-        var newCoords = {
-          x: mainPin.offsetLeft - shift.x,
-          y: mainPin.offsetTop - shift.y
-        };
-        if (mainPin.offsetLeft - shift.x > limits.right) {
-          newCoords.x = limits.right;
-        }
-        if (mainPin.offsetLeft - shift.x < limits.left) {
-          newCoords.x = limits.left;
-        }
-        if (mainPin.offsetTop - shift.y > limits.bottom) {
-          newCoords.y = limits.bottom;
-        }
-        if (mainPin.offsetTop - shift.y < limits.top) {
-          newCoords.y = limits.top;
-        }
-        return newCoords;
-      };
-
-      var newMapPinCoords = calculateNewCoords();
-      mainPin.style.left = newMapPinCoords.x + 'px';
-      mainPin.style.top = newMapPinCoords.y + 'px';
-    };
-
-    var onMouseUp = function (upEvt) {
-      upEvt.preventDefault();
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
-
-      window.form.getAddressFromPin();
-    };
-
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup', onMouseUp);
-  });
 })();

@@ -25,6 +25,13 @@
   var checkinSelect = formContent.querySelector('#timein'); // Находит поле "Время заезда"
   var checkoutSelect = formContent.querySelector('#timeout'); // Находит поле "Время выезда"
 
+  // Функция для деактивации элементов формы в изначальном состоянии
+  window.form.disableFormElements = function (arr) {
+    for (var i = 0; i < arr.length; i++) {
+      arr[i].disabled = 'true';
+    }
+  };
+
   // Синхронизация "Количество комнат" и "Количество мест" (Валидация формы)
   var validateCapacity = function () {
     var selectedCapacity = Number(capacitySelect.value);
