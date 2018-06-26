@@ -4,8 +4,6 @@
 
   window.card = {};
 
-  var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
-
   var template = document.querySelector('template');
   var cardTemplate = template.content.querySelector('.map__card');
   var img = cardTemplate.cloneNode(true).querySelector('.popup__photo');
@@ -32,11 +30,10 @@
   // Функция для создания иконок доступных удобств в объявлении
   var getFeaturesIcons = function (list, amount) {
     var currentAdFeatures = amount.offer.features;
-    var allFeatures = FEATURES;
 
-    for (var i = 0; i < allFeatures.length; i++) {
-      if (!currentAdFeatures.includes(allFeatures[i])) {
-        var featureItem = list.querySelector('.popup__feature--' + allFeatures[i]);
+    for (var i = 0; i < window.data.feauters.length; i++) {
+      if (!currentAdFeatures.includes(window.data.feauters[i])) {
+        var featureItem = list.querySelector('.popup__feature--' + window.data.feauters[i]);
         list.removeChild(featureItem);
       }
     }
