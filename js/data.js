@@ -3,7 +3,7 @@
 (function () {
 
   window.data = {};
-
+  /*
   var TITLES = ['Большая уютная квартира',
     'Маленькая неуютная квартира',
     'Огромный прекрасный дворец',
@@ -48,6 +48,7 @@
   var getRandomInRange = function (min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
   };
+
 
   var getShuffledFeauters = function (arr) {
     var newArray = arr.slice(0);
@@ -114,6 +115,28 @@
     }
 
     return randomAds;
+  };
+*/
+
+  window.data.onSuccess = function (cardsArray) {
+    var fragment = document.createDocumentFragment();
+    // window.library.getShuffleArray(cardsArray);
+
+    for (var i = 0; i < cardsArray.length; i++) {
+      fragment.appendChild(window.card.generateInfoPromo(cardsArray[i]));
+    }
+    // map.appendChild(fragment);
+  };
+
+  window.data.onError = function (errorMessage) {
+    var node = document.createElement('div');
+    node.style = 'z-index: 100; margin: 0 auto; text-align: center; background-color: rgba(255, 50, 0, 0.7); top: 200px; left: 50%; transform: translateX(-50%); box-shadow: 0 0 50px rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 50, 0, 0.7); border-radius: 20px';
+    node.style.position = 'fixed';
+    node.style.padding = '50px 30px';
+    node.style.fontfamily = 'Arial';
+    node.style.fontSize = '24px';
+    node.textContent = errorMessage;
+    document.body.insertAdjacentElement('afterbegin', node);
   };
 
 })();

@@ -4,9 +4,9 @@
 
   var MAIN_PIN_WIDTH = 62; // Ширина главной метки адреса (.map__pin--main) в неактивном состоянии
   var MAIN_PIN_HEIGHT = 58; // Высота главной метки адреса (.map__pin--main) в неактивном состоянии
-  var posterArr = null;
   var TOP_LIMIT = 130; // Верхняя граница ограничения передвижения маркера на карте
   var BOTTOM_LIMIT = 630; // Нижняя граница ограничения передвижения маркера на карте
+  var posterArr = null;
 
   var map = document.querySelector('.map');
   var similarListElement = document.querySelector('.map__pins');
@@ -149,7 +149,8 @@
   var init = function () {
 
     // Создает массив похожих объявлений
-    posterArr = window.data.createPostersAds();
+    // posterArr = window.data.createPostersAds();
+    posterArr = window.backend.load(window.data.onSuccess, window.data.onError);
 
     // Подготовка формы к отправке
     window.form.prepareForm();
