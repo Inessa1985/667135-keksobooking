@@ -149,8 +149,8 @@
   var init = function () {
 
     // Создает массив похожих объявлений
-    // posterArr = window.data.createPostersAds();
-    posterArr = window.backend.load(window.data.onSuccess, window.data.onError);
+    posterArr = window.data.createPostersAds();
+    // posterArr = window.backend.load(window.data.onSuccess, window.data.onError);
 
     // Подготовка формы к отправке
     window.form.prepareForm();

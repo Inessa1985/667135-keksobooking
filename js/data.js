@@ -105,20 +105,11 @@
       }
     };
   };
-
-  // Функция создания массива похожих объявлений
-  window.data.createPostersAds = function () {
-    var randomAds = [];
-
-    for (var i = 0; i < NUMBER_OF_ADS; i++) {
-      randomAds.push(createPosterData());
-    }
-
-    return randomAds;
-  };
 */
 
-  window.data.onSuccess = function (cardsArray) {
+  var NUMBER_OF_ADS = 10;
+
+  var onSuccess = function (cardsArray) {
     var fragment = document.createDocumentFragment();
     // window.library.getShuffleArray(cardsArray);
 
@@ -128,7 +119,7 @@
     // map.appendChild(fragment);
   };
 
-  window.data.onError = function (errorMessage) {
+  var onError = function (errorMessage) {
     var node = document.createElement('div');
     node.style = 'z-index: 100; margin: 0 auto; text-align: center; background-color: rgba(255, 50, 0, 0.7); top: 200px; left: 50%; transform: translateX(-50%); box-shadow: 0 0 50px rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 50, 0, 0.7); border-radius: 20px';
     node.style.position = 'fixed';
@@ -137,6 +128,17 @@
     node.style.fontSize = '24px';
     node.textContent = errorMessage;
     document.body.insertAdjacentElement('afterbegin', node);
+  };
+
+    // Функция создания массива похожих объявлений
+  window.data.createPostersAds = function () {
+    var randomAds = [];
+
+    for (var i = 0; i < NUMBER_OF_ADS; i++) {
+      randomAds.push(window.backend.load(onSuccess, onError));
+    }
+
+    return randomAds;
   };
 
 })();
