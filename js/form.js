@@ -11,6 +11,7 @@
   var MIN_PRICE_FLAT = 1000;
   var MIN_PRICE_HOUSE = 5000;
   var MIN_PRICE_PALACE = 10000;
+  var ESC_KEYCODE = 27;
 
   var map = document.querySelector('.map');
   var mainPin = document.querySelector('.map__pin--main');
@@ -24,6 +25,7 @@
   var selectedRooms = Number(roomsSelect.value); // Приводит значение поля "Кол-во комнат" к числовому
   var checkinSelect = formContent.querySelector('#timein'); // Находит поле "Время заезда"
   var checkoutSelect = formContent.querySelector('#timeout'); // Находит поле "Время выезда"
+  var successPopup = document.querySelector('.success'); // Находит блок сообщения об успешном размещении объевления
 
   // Функция для деактивации элементов формы в изначальном состоянии
   window.form.disableFormElements = function (arr) {
@@ -121,6 +123,27 @@
     addressInput.value = addressValue;
   };
 
+  var onPopupEscPress = function (evt) {
+    if (evt.keyCode === ESC_KEYCODE) {
+      closePopup();
+    }
+  };
+
+  var openPopup = function () {
+    successPopup.classList.remove('hidden');
+    document.addEventListener('keydown', onPopupEscPress);
+  };
+
+  var closePopup = function () {
+    successPopup.classList.add('hidden');
+    document.removeEventListener('keydown', onPopupEscPress);
+  };
+
+  var onSuccessForm = function () {
+    openPopup();
+    closePopup();
+  };
+
   // Функция подготовки формы к отправке
   window.form.prepareForm = function () {
     // Выводит координаты главной метки адреса (.map__pin--main) в нижней форме объявления в неактивном состоянии
@@ -144,5 +167,10 @@
     checkoutSelect.addEventListener('change', onCheckoutSelectChangeHandler);
   };
 
+  // Отправка формы
+  formContent.addEventListener('submit', function (evt) {
+    evt.preventDefault();
+    window.backend.save(new FormData(formContent), onSuccessForm, window.map.onError);
+  });
 
 })();

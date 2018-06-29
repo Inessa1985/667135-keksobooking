@@ -30,13 +30,17 @@
   // Функция для создания иконок доступных удобств в объявлении
   var getFeaturesIcons = function (list, amount) {
     var currentAdFeatures = amount.offer.features;
+    var featureFragment = document.createDocumentFragment();
+    list.innerHTML = '';
 
-    for (var i = 0; i < window.data.feauters.length; i++) {
-      if (!currentAdFeatures.includes(window.data.feauters[i])) {
-        var featureItem = list.querySelector('.popup__feature--' + window.data.feauters[i]);
-        list.removeChild(featureItem);
-      }
+    for (var i = 0; i < currentAdFeatures.length; i++) {
+      var featuresItem = document.createElement('li');
+      featuresItem.classList.add('.popup__feature');
+      featuresItem.classList.add('.popup__feature--' + currentAdFeatures[i]);
+      featureFragment.appendChild(featuresItem);
     }
+
+    list.appendChild(featureFragment);
   };
 
   // Функция для создания фотографий в объявлении
