@@ -4,13 +4,12 @@
   window.backend = {};
 
   window.backend.load = function (onLoad, onError) {
-    var URL = 'https://js.dump.academy/code-and-magick/data';
+    var URL = 'https://js.dump.academy/keksobooking/data';
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
     xhr.timeout = 4000;
 
     xhr.addEventListener('load', function () {
-      // onSuccess(xhr.response);
       switch (xhr.status) {
         case 200:
           onLoad(xhr.response);
@@ -34,7 +33,7 @@
   };
 
   window.backend.save = function (data, onLoad, onError) {
-    var URL = 'https://js.dump.academy/code-and-magick';
+    var URL = 'https://js.dump.academy/keksobooking';
     var xhr = new XMLHttpRequest();
     xhr.timeout = 10000;
 
