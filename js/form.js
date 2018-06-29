@@ -141,7 +141,7 @@
 
   var onSuccessForm = function () {
     openPopup();
-    closePopup();
+    successPopup.addEventListener('keydown', onPopupEscPress);
   };
 
   // Функция подготовки формы к отправке
