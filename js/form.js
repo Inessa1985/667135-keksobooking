@@ -4,6 +4,8 @@
 
   window.form = {};
 
+  var MAIN_PIN_X = 570; // Координата X метки адреса (.map__pin--main) в неактивном состоянии
+  var MAIN_PIN_Y = 375; // Координата Y метки адреса (.map__pin--main) в неактивном состоянии
   var MAIN_PIN_WIDTH = 62; // Ширина главной метки адреса (.map__pin--main) в неактивном состоянии
   var MAIN_PIN_HEIGHT = 58; // Высота главной метки адреса (.map__pin--main) в неактивном состоянии
   var MAIN_PIN_END_HEIGHT = 22; // Высота хвостика главной метки адреса (.map__pin--main) в активном состоянии
@@ -12,8 +14,11 @@
   var MIN_PRICE_HOUSE = 5000;
   var MIN_PRICE_PALACE = 10000;
   var ESC_KEYCODE = 27;
+  var pinCenterX = Math.round(MAIN_PIN_X + MAIN_PIN_WIDTH * 0.5); // Координата центра по оси X главной метки адреса (.map__pin--main) в неактивном состоянии
+  var pinCenterY = Math.round(MAIN_PIN_Y + MAIN_PIN_HEIGHT * 0.5); // Координата центра по оси Y главной метки адреса (.map__pin--main) в неактивном состоянии
 
   var map = document.querySelector('.map');
+  var mapPins = document.querySelector('.map__pins');
   var mainPin = document.querySelector('.map__pin--main');
   var formContent = document.querySelector('.ad-form'); // Находит форму для отправки объявления
   var addressInput = formContent.querySelector('#address'); // Находит поле адреса в нижней форме для отправки объявления
@@ -140,10 +145,37 @@
     document.removeEventListener('keydown', onPopupEscPress);
   };
 
+
+  var deactivatePage = function () {
+    var erasePinElement = mapPins.querySelectorAll('.map__pin:not(:first-of-type)');
+
+    formContent.reset(); // Сбрасывает значения формы на изначальные
+    map.classList.add('map--faded'); // У блока .map добавляет класс .map--faded
+    formContent.classList.add('ad-form--disabled'); // У блока .ad-form добавляет класс .ad-form--disabled (деактивация формы объявления)
+    mainPin.style.left = MAIN_PIN_X + 'px'; // Координата X главной метки на карте
+    mainPin.style.top = MAIN_PIN_Y + 'px'; // Координата Y главной метки на карте
+
+    // if (erasePinElement) {
+    //   mapPins.removeChild(erasePinElement); // Удаляет на карте фрагменты с маркерами (пин-элементы)
+    // }
+
+    erasePinElement.firstChild.remove();
+    /*
+    while (erasePinElement.firstElement) {
+      mapPins.removeChild(erasePinElement.firstChild);
+    }*/
+
+    window.map.erasePromoCard(); // Удаляет созданную карточку объявления
+
+    // Выводит координаты главной метки адреса (.map__pin--main) в нижней форме объявления в неактивном состоянии
+    addressInput.value = pinCenterX + ', ' + pinCenterY;
+
+  };
+
   var onSuccessForm = function () {
     openPopup();
     successPopup.addEventListener('keydown', onPopupEscPress);
-    formContent.reset();
+    deactivatePage();
   };
 
   // Функция подготовки формы к отправке
@@ -169,15 +201,16 @@
     checkoutSelect.addEventListener('change', onCheckoutSelectChangeHandler);
   };
 
-  // Сброс формы кнопкой "очистить"
-  formReset.addEventListener('clik', function () {
-    formContent.reset();
-  });
-
   // Отправка формы
   formContent.addEventListener('submit', function (evt) {
     evt.preventDefault();
     window.backend.save(new FormData(formContent), onSuccessForm, window.map.onError);
+  });
+
+
+  // Сброс формы кнопкой "очистить"
+  formReset.addEventListener('click', function () {
+    deactivatePage();
   });
 
 })();
