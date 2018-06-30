@@ -4,9 +4,6 @@
 
   window.pin = {};
 
-  // var PIN_WIDTH = 50; // Ширина элемента сгенерированного маркера на карте
-  // var PIN_HEIGHT = 70;// Высота элемента сгенерированного маркера на карте
-
   var template = document.querySelector('template');
   var pinTemplate = template.content.querySelector('.map__pin');
 
@@ -14,8 +11,6 @@
   var createPinElement = function (pinData) {
     var pinElement = pinTemplate.cloneNode(true);
 
-    // pinElement.style.left = (pinData.location.x - PIN_WIDTH * 0.5) + 'px';
-    // pinElement.style.top = (pinData.location.y - PIN_HEIGHT) + 'px';
     pinElement.style.left = pinData.location.x + 'px';
     pinElement.style.top = pinData.location.y + 'px';
     pinElement.querySelector('img').src = pinData.author.avatar;

@@ -8,7 +8,6 @@
   var cardTemplate = template.content.querySelector('.map__card');
   var img = cardTemplate.cloneNode(true).querySelector('.popup__photo');
 
-
   // Функция для перевода типа жилья на русский язык
   var getTypeHouse = function (advData) {
     var type = advData.offer.type;
@@ -35,8 +34,8 @@
 
     for (var i = 0; i < currentAdFeatures.length; i++) {
       var featuresItem = document.createElement('li');
-      featuresItem.classList.add('.popup__feature');
-      featuresItem.classList.add('.popup__feature--' + currentAdFeatures[i]);
+      featuresItem.classList.add('popup__feature');
+      featuresItem.classList.add('popup__feature--' + currentAdFeatures[i]);
       featureFragment.appendChild(featuresItem);
     }
 
