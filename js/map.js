@@ -2,11 +2,13 @@
 
 (function () {
 
+  window.map = {};
+
   var MAIN_PIN_WIDTH = 62; // Ширина главной метки адреса (.map__pin--main) в неактивном состоянии
   var MAIN_PIN_HEIGHT = 58; // Высота главной метки адреса (.map__pin--main) в неактивном состоянии
-  var posterArr = null;
   var TOP_LIMIT = 130; // Верхняя граница ограничения передвижения маркера на карте
   var BOTTOM_LIMIT = 630; // Нижняя граница ограничения передвижения маркера на карте
+  var posterArr = null;
 
   var map = document.querySelector('.map');
   var similarListElement = document.querySelector('.map__pins');
@@ -23,7 +25,7 @@
   };
 
   // Функция для удаления созданной карточки объявления
-  var erasePromoCard = function () {
+  window.map.erasePromoCard = function () {
     var previousCard = map.querySelector('.map__card');
 
     if (previousCard) {
@@ -36,7 +38,7 @@
     var cardCloseButton = map.querySelector('.popup__close');
 
     cardCloseButton.addEventListener('click', function () {
-      erasePromoCard();
+      window.map.erasePromoCard();
     });
   };
 
@@ -51,7 +53,7 @@
   // Метод для отрисовки карточки предложения по клику на соответствующий пин
   var pinElementAddHandler = function (element, addObject) {
     element.addEventListener('click', function () {
-      erasePromoCard(); // Удаляет предыдущую карточку объявления с описанием
+      window.map.erasePromoCard(); // Удаляет предыдущую карточку объявления с описанием
       map.appendChild(window.card.generateInfoPromo(addObject)); // Добавляет карточку объявления с описанием
       closeCardPopup(); // Закрывает карточку объявления с описанием
     });
@@ -145,11 +147,27 @@
     });
   };
 
+  var onSuccess = function (cardsArray) {
+    posterArr = cardsArray;
+
+    // Активация страницы и претаскивание главной метки
+    clickMainPin();
+  };
+
+  window.map.onError = function (errorMessage) {
+    var node = document.createElement('div');
+    node.style = 'z-index: 100; margin: 0 auto; text-align: center; background-color: rgba(255, 50, 0, 0.7); top: 200px; left: 50%; transform: translateX(-50%); box-shadow: 0 0 50px rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 50, 0, 0.7); border-radius: 20px';
+    node.style.position = 'fixed';
+    node.style.padding = '50px 30px';
+    node.style.fontfamily = 'Arial';
+    node.style.color = 'white';
+    node.style.fontSize = '24px';
+    node.textContent = errorMessage;
+    document.body.insertAdjacentElement('afterbegin', node);
+  };
+
   // Функция для инициализации страницы
   var init = function () {
-
-    // Создает массив похожих объявлений
-    posterArr = window.data.createPostersAds();
 
     // Подготовка формы к отправке
     window.form.prepareForm();
@@ -157,9 +175,8 @@
     // Деактивация нижней формы объявления
     window.form.disableFormElements(formElementList);
 
-    // Активация страницы и претаскивание главной метки
-    clickMainPin();
-
+    // Скачивание массива с сервера и активация страницы, пертаскивание главной метки
+    window.backend.load(onSuccess, window.map.onError);
   };
 
   // Инициализирует страницу

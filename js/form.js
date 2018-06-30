@@ -4,6 +4,8 @@
 
   window.form = {};
 
+  var MAIN_PIN_X = 570; // Координата X метки адреса (.map__pin--main) в неактивном состоянии
+  var MAIN_PIN_Y = 375; // Координата Y метки адреса (.map__pin--main) в неактивном состоянии
   var MAIN_PIN_WIDTH = 62; // Ширина главной метки адреса (.map__pin--main) в неактивном состоянии
   var MAIN_PIN_HEIGHT = 58; // Высота главной метки адреса (.map__pin--main) в неактивном состоянии
   var MAIN_PIN_END_HEIGHT = 22; // Высота хвостика главной метки адреса (.map__pin--main) в активном состоянии
@@ -11,8 +13,12 @@
   var MIN_PRICE_FLAT = 1000;
   var MIN_PRICE_HOUSE = 5000;
   var MIN_PRICE_PALACE = 10000;
+  var ESC_KEYCODE = 27;
+  var pinCenterX = Math.round(MAIN_PIN_X + MAIN_PIN_WIDTH * 0.5); // Координата центра по оси X главной метки адреса (.map__pin--main) в неактивном состоянии
+  var pinCenterY = Math.round(MAIN_PIN_Y + MAIN_PIN_HEIGHT * 0.5); // Координата центра по оси Y главной метки адреса (.map__pin--main) в неактивном состоянии
 
   var map = document.querySelector('.map');
+  var mapPinsBlock = document.querySelector('.map__pins');
   var mainPin = document.querySelector('.map__pin--main');
   var formContent = document.querySelector('.ad-form'); // Находит форму для отправки объявления
   var addressInput = formContent.querySelector('#address'); // Находит поле адреса в нижней форме для отправки объявления
@@ -24,6 +30,9 @@
   var selectedRooms = Number(roomsSelect.value); // Приводит значение поля "Кол-во комнат" к числовому
   var checkinSelect = formContent.querySelector('#timein'); // Находит поле "Время заезда"
   var checkoutSelect = formContent.querySelector('#timeout'); // Находит поле "Время выезда"
+  var successPopup = document.querySelector('.success'); // Находит блок сообщения об успешном размещении объевления
+  var formReset = formContent.querySelector('.ad-form__reset'); // Находит кнопку для сброса формы отправки объявления
+  var formElementList = formContent.querySelectorAll('fieldset'); // Находит поля формы для отправки объявления
 
   // Функция для деактивации элементов формы в изначальном состоянии
   window.form.disableFormElements = function (arr) {
@@ -121,6 +130,55 @@
     addressInput.value = addressValue;
   };
 
+  var onPopupEscPress = function (evt) {
+    if (evt.keyCode === ESC_KEYCODE) {
+      closePopup();
+    }
+  };
+
+  var openPopup = function () {
+    successPopup.classList.remove('hidden');
+    document.addEventListener('keydown', onPopupEscPress);
+  };
+
+  var closePopup = function () {
+    successPopup.classList.add('hidden');
+    document.removeEventListener('keydown', onPopupEscPress);
+  };
+
+  // Функция перевода страницы в неактивное состояние
+  var deactivatePage = function () {
+    var mapPins = mapPinsBlock.querySelectorAll('.map__pin:not(:first-of-type)'); // Находит созданные пин-элементы на карте кроме главной метки
+
+    formContent.reset(); // Сбрасывает значения формы на изначальные
+    map.classList.add('map--faded'); // У блока .map добавляет класс .map--faded
+    formContent.classList.add('ad-form--disabled'); // У блока .ad-form добавляет класс .ad-form--disabled (деактивация формы объявления)
+    mainPin.style.left = MAIN_PIN_X + 'px'; // Координата X главной метки на карте
+    mainPin.style.top = MAIN_PIN_Y + 'px'; // Координата Y главной метки на карте
+
+    // Удаляет пин-элементы с карты
+    for (var i = 0; i < mapPins.length; i++) {
+      mapPins[i].parentNode.removeChild(mapPins[i]);
+    }
+
+    // Удаляет созданную карточку объявления
+    window.map.erasePromoCard();
+
+    // Выводит координаты главной метки адреса (.map__pin--main) в нижней форме объявления в неактивном состоянии
+    addressInput.value = pinCenterX + ', ' + pinCenterY;
+
+    // Деактивация полей нижней формы объявления
+    window.form.disableFormElements(formElementList);
+
+  };
+
+  var onSuccessForm = function () {
+    openPopup();
+    successPopup.addEventListener('keydown', onPopupEscPress);
+    successPopup.addEventListener('click', closePopup);
+    deactivatePage();
+  };
+
   // Функция подготовки формы к отправке
   window.form.prepareForm = function () {
     // Выводит координаты главной метки адреса (.map__pin--main) в нижней форме объявления в неактивном состоянии
@@ -144,5 +202,15 @@
     checkoutSelect.addEventListener('change', onCheckoutSelectChangeHandler);
   };
 
+  // Отправка формы
+  formContent.addEventListener('submit', function (evt) {
+    evt.preventDefault();
+    window.backend.save(new FormData(formContent), onSuccessForm, window.map.onError);
+  });
+
+  // Сброс формы кнопкой "очистить"
+  formReset.addEventListener('click', function () {
+    deactivatePage();
+  });
 
 })();
