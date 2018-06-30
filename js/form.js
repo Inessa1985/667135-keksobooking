@@ -147,17 +147,20 @@
 
 
   var deactivatePage = function () {
-    var erasePinElement = mapPins.querySelectorAll('.map__pin:not(:first-of-type)');
+    // var erasePinElement = mapPins.querySelectorAll('.map__pin:not(:first-of-type)');
+    var pinArray = ['', '', '', '', '', '', '', '', '', ''];
 
     formContent.reset(); // Сбрасывает значения формы на изначальные
     map.classList.add('map--faded'); // У блока .map добавляет класс .map--faded
     formContent.classList.add('ad-form--disabled'); // У блока .ad-form добавляет класс .ad-form--disabled (деактивация формы объявления)
     mainPin.style.left = MAIN_PIN_X + 'px'; // Координата X главной метки на карте
     mainPin.style.top = MAIN_PIN_Y + 'px'; // Координата Y главной метки на карте
-
+    /*
     while (erasePinElement.firstChild) {
       erasePinElement.removeChild(erasePinElement.firstChild);
-    }
+    }*/
+
+    window.pin.createPinsFragment(pinArray);
 
     window.map.erasePromoCard(); // Удаляет созданную карточку объявления
 
