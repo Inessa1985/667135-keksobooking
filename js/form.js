@@ -18,7 +18,7 @@
   var pinCenterY = Math.round(MAIN_PIN_Y + MAIN_PIN_HEIGHT * 0.5); // Координата центра по оси Y главной метки адреса (.map__pin--main) в неактивном состоянии
 
   var map = document.querySelector('.map');
-  var mapPins = document.querySelector('.map__pins');
+  var mapPinsBlock = document.querySelector('.map__pins');
   var mainPin = document.querySelector('.map__pin--main');
   var formContent = document.querySelector('.ad-form'); // Находит форму для отправки объявления
   var addressInput = formContent.querySelector('#address'); // Находит поле адреса в нижней форме для отправки объявления
@@ -32,6 +32,7 @@
   var checkoutSelect = formContent.querySelector('#timeout'); // Находит поле "Время выезда"
   var successPopup = document.querySelector('.success'); // Находит блок сообщения об успешном размещении объевления
   var formReset = formContent.querySelector('.ad-form__reset'); // Находит кнопку для сброса формы отправки объявления
+  var formElementList = formContent.querySelectorAll('fieldset'); // Находит поля формы для отправки объявления
 
   // Функция для деактивации элементов формы в изначальном состоянии
   window.form.disableFormElements = function (arr) {
@@ -145,9 +146,9 @@
     document.removeEventListener('keydown', onPopupEscPress);
   };
 
-
+  // Функция перевода страницы в неактивное состояние
   var deactivatePage = function () {
-    var erasePinElement = mapPins.querySelectorAll('.map__pin:not(:first-of-type)');
+    var mapPins = mapPinsBlock.querySelectorAll('.map__pin:not(:first-of-type)'); // Находит созданные пин-элементы на карте кроме главной метки
 
     formContent.reset(); // Сбрасывает значения формы на изначальные
     map.classList.add('map--faded'); // У блока .map добавляет класс .map--faded
@@ -155,20 +156,26 @@
     mainPin.style.left = MAIN_PIN_X + 'px'; // Координата X главной метки на карте
     mainPin.style.top = MAIN_PIN_Y + 'px'; // Координата Y главной метки на карте
 
-    // window.pin.createPinsFragment(pinArray);
+    // Удаляет пин-элементы с карты
+    for (var i = 0; i < mapPins.length; i++) {
+      mapPins[i].parentNode.removeChild(mapPins[i]);
+    }
 
-    erasePinElement.parentNode.removeChild(erasePinElement.firstChild); // Удаляет пин-элементы с карты
-
-    window.map.erasePromoCard(); // Удаляет созданную карточку объявления
+    // Удаляет созданную карточку объявления
+    window.map.erasePromoCard();
 
     // Выводит координаты главной метки адреса (.map__pin--main) в нижней форме объявления в неактивном состоянии
     addressInput.value = pinCenterX + ', ' + pinCenterY;
+
+    // Деактивация полей нижней формы объявления
+    window.form.disableFormElements(formElementList);
 
   };
 
   var onSuccessForm = function () {
     openPopup();
     successPopup.addEventListener('keydown', onPopupEscPress);
+    successPopup.addEventListener('click', closePopup);
     deactivatePage();
   };
 
@@ -200,7 +207,6 @@
     evt.preventDefault();
     window.backend.save(new FormData(formContent), onSuccessForm, window.map.onError);
   });
-
 
   // Сброс формы кнопкой "очистить"
   formReset.addEventListener('click', function () {
