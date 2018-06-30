@@ -155,15 +155,9 @@
     mainPin.style.left = MAIN_PIN_X + 'px'; // Координата X главной метки на карте
     mainPin.style.top = MAIN_PIN_Y + 'px'; // Координата Y главной метки на карте
 
-    // if (erasePinElement) {
-    //   mapPins.removeChild(erasePinElement); // Удаляет на карте фрагменты с маркерами (пин-элементы)
-    // }
-
-    erasePinElement.firstChild.remove();
-    /*
-    while (erasePinElement.firstElement) {
-      mapPins.removeChild(erasePinElement.firstChild);
-    }*/
+    while (erasePinElement.firstChild) {
+      erasePinElement.removeChild(erasePinElement.firstChild);
+    }
 
     window.map.erasePromoCard(); // Удаляет созданную карточку объявления
 
