@@ -11,7 +11,7 @@
   var posterArr = null;
 
   var map = document.querySelector('.map');
-  window.map.similarListElement = document.querySelector('.map__pins');
+  var similarListElement = document.querySelector('.map__pins');
   var formContent = document.querySelector('.ad-form'); // Находит форму для отправки объявления
   var formElementList = formContent.querySelectorAll('fieldset'); // Находит поля формы для отправки объявления
   var mainPin = document.querySelector('.map__pin--main');
@@ -47,7 +47,7 @@
     map.classList.remove('map--faded'); // У блока .map убирает класс .map--faded
     enableFormElements(formElementList); // Активация нижней формы объявления
     formContent.classList.remove('ad-form--disabled'); // У блока .ad-form убирает класс .ad-form--disabled (Активация формы объявления)
-    window.map.similarListElement.appendChild(window.pin.createPinsFragment(addArray)); // Добавляет на карту фрагменты с маркерами
+    similarListElement.appendChild(window.pin.createPinsFragment(addArray)); // Добавляет на карту фрагменты с маркерами
   };
 
   // Метод для отрисовки карточки предложения по клику на соответствующий пин
@@ -60,7 +60,7 @@
   };
 
   var pinClickHandler = function (arr) {
-    var renderedPinList = window.map.similarListElement.querySelectorAll('.map__pin:not(:first-of-type)');
+    var renderedPinList = similarListElement.querySelectorAll('.map__pin:not(:first-of-type)');
 
     for (var i = 0; i < renderedPinList.length; i++) {
       pinElementAddHandler(renderedPinList[i], arr[i]);
