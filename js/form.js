@@ -146,12 +146,6 @@
     formContent.reset();
   };
 
-  var resetFormButton = function () {
-    formReset.addEventListener('clik', function () {
-      formContent.reset();
-    });
-  };
-
   // Функция подготовки формы к отправке
   window.form.prepareForm = function () {
     // Выводит координаты главной метки адреса (.map__pin--main) в нижней форме объявления в неактивном состоянии
@@ -176,7 +170,9 @@
   };
 
   // Сброс формы кнопкой "очистить"
-  resetFormButton();
+  formReset.addEventListener('clik', function () {
+    formContent.reset();
+  });
 
   // Отправка формы
   formContent.addEventListener('submit', function (evt) {
