@@ -26,6 +26,7 @@
   var checkinSelect = formContent.querySelector('#timein'); // Находит поле "Время заезда"
   var checkoutSelect = formContent.querySelector('#timeout'); // Находит поле "Время выезда"
   var successPopup = document.querySelector('.success'); // Находит блок сообщения об успешном размещении объевления
+  var formReset = formContent.querySelector('.ad-form__reset'); // Находит кнопку для сброса формы отправки объявления
 
   // Функция для деактивации элементов формы в изначальном состоянии
   window.form.disableFormElements = function (arr) {
@@ -142,6 +143,13 @@
   var onSuccessForm = function () {
     openPopup();
     successPopup.addEventListener('keydown', onPopupEscPress);
+    formContent.reset();
+  };
+
+  var resetFormButton = function () {
+    formReset.addEventListener('clik', function () {
+      formContent.reset();
+    });
   };
 
   // Функция подготовки формы к отправке
@@ -166,6 +174,9 @@
     checkinSelect.addEventListener('change', onCheckinSelectChangeHandler);
     checkoutSelect.addEventListener('change', onCheckoutSelectChangeHandler);
   };
+
+  // Сброс формы кнопкой "очистить"
+  resetFormButton();
 
   // Отправка формы
   formContent.addEventListener('submit', function (evt) {
