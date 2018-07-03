@@ -6,6 +6,7 @@
 
   var template = document.querySelector('template');
   var pinTemplate = template.content.querySelector('.map__pin');
+  var ADD_PINS = 5;
 
   // Функция создания элемента маркера на карте
   var createPinElement = function (pinData) {
@@ -22,7 +23,9 @@
   // Функция создания фрагмента с маркерами на карте
   window.pin.createPinsFragment = function (arr) {
     var fragment = document.createDocumentFragment();
-    for (var i = 0; i < arr.length; i++) {
+    var takeNumber = arr.length > ADD_PINS ? ADD_PINS : arr.length;
+
+    for (var i = 0; i < takeNumber; i++) {
       fragment.appendChild(createPinElement(arr[i]));
     }
 
