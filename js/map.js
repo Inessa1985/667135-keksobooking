@@ -16,7 +16,6 @@
   var formElementList = formContent.querySelectorAll('fieldset'); // Находит поля формы для отправки объявления
   var mainPin = document.querySelector('.map__pin--main');
 
-
   // Функция возвращает активное состояние элементам формы в изначальное состояние
   var enableFormElements = function (arr) {
     for (var i = 0; i < arr.length; i++) {
@@ -152,6 +151,9 @@
 
     // Активация страницы и претаскивание главной метки
     clickMainPin();
+
+    // Фильтрация объявлений
+    window.filter.updateAdvert();
   };
 
   window.map.onError = function (errorMessage) {
@@ -177,6 +179,8 @@
 
     // Скачивание массива с сервера и активация страницы, пертаскивание главной метки
     window.backend.load(onSuccess, window.map.onError);
+
+
   };
 
   // Инициализирует страницу
