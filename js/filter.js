@@ -83,13 +83,17 @@
   };
 
   window.filter.updateAdvert = function () {
-    var advertsCopy = adverts;
-    var filteredAdverts = advertsCopy.filter(function (advert) {
-      return onHousingTypeChange(advert) &&
-        onHousingPriceChange(advert) &&
-        onHousingRoomsChange(advert) &&
-        onHousingGuestChange(advert) &&
-        onHousingFeaturesChange(advert);
+
+    var filteredAdverts = adverts.filter(function (advert) {
+      return onHousingTypeChange(advert);
+    }).filter(function (advert) {
+      return onHousingPriceChange(advert);
+    }).filter(function (advert) {
+      return onHousingRoomsChange(advert);
+    }).filter(function (advert) {
+      return onHousingGuestChange(advert);
+    }).filter(function (advert) {
+      return onHousingFeaturesChange(advert);
     });
 
     window.map.erasePromoCard();
