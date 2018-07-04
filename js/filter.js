@@ -74,17 +74,11 @@
 
   window.filter.updateAdvert = function () {
 
-    var filteredAdverts = adverts.filter(function (advert) {
-      return onHousingTypeChange(advert);
-    }).filter(function (advert) {
-      return onHousingPriceChange(advert);
-    }).filter(function (advert) {
-      return onHousingRoomsChange(advert);
-    }).filter(function (advert) {
-      return onHousingGuestChange(advert);
-    }).filter(function (advert) {
-      return onHousingFeaturesChange(advert);
-    });
+    var filteredAdverts = adverts.filter(onHousingTypeChange).
+                                  filter(onHousingPriceChange).
+                                  filter(onHousingRoomsChange).
+                                  filter(onHousingGuestChange).
+                                  filter(onHousingFeaturesChange);
 
     window.map.erasePromoCard();
     window.form.removeMapPins();
