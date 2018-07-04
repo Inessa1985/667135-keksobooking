@@ -146,9 +146,16 @@
     document.removeEventListener('keydown', onPopupEscPress);
   };
 
+  window.form.removeMapPins = function () {
+    var pins = mapPinsBlock.querySelectorAll('.map__pin:not(.map__pin--main)');
+
+    for (var i = 0; i < pins.length; i++) {
+      mapPinsBlock.removeChild(pins[i]);
+    }
+  };
+
   // Функция перевода страницы в неактивное состояние
   var deactivatePage = function () {
-    var mapPins = mapPinsBlock.querySelectorAll('.map__pin:not(:first-of-type)'); // Находит созданные пин-элементы на карте кроме главной метки
 
     formContent.reset(); // Сбрасывает значения формы на изначальные
     map.classList.add('map--faded'); // У блока .map добавляет класс .map--faded
@@ -157,9 +164,7 @@
     mainPin.style.top = MAIN_PIN_Y + 'px'; // Координата Y главной метки на карте
 
     // Удаляет пин-элементы с карты
-    for (var i = 0; i < mapPins.length; i++) {
-      mapPins[i].parentNode.removeChild(mapPins[i]);
-    }
+    window.form.removeMapPins();
 
     // Удаляет созданную карточку объявления
     window.map.erasePromoCard();

@@ -4,16 +4,6 @@
 
   window.filter = {};
 
-  var mapPinsBlock = document.querySelector('.map__pins');
-
-  var removeMapPins = function () {
-    var pins = mapPinsBlock.querySelectorAll('.map__pin:not(.map__pin--main)');
-
-    for (var i = 0; i < pins.length; i++) {
-      mapPinsBlock.removeChild(pins[i]);
-    }
-  };
-
   var PRICE_RANGES = {
     low: {
       min: 0,
@@ -97,7 +87,7 @@
     });
 
     window.map.erasePromoCard();
-    removeMapPins();
+    window.form.removeMapPins();
     window.pin.createPinsFragment(filteredAdverts);
   };
 
