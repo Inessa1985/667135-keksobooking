@@ -72,13 +72,10 @@
   var onPageActive = function () {
     enablePage(window.map.posterArr); // Активация сраницы
     window.map.pinClickHandler(window.map.posterArr); // Добавляет карточку объявления по клику на пин-элемент
-    // mainPin.removeEventListener('mouseup', onPageActive);
   };
 
   // Функция взаимодействия страницы и главной метки
-  window.map.clickMainPin = function () {
-    // Активация страницы
-    mainPin.addEventListener('mouseup', onPageActive);
+  var clickMainPin = function () {
 
     // Метод перетаскивания главной метки
     mainPin.addEventListener('mousedown', function (event) {
@@ -139,6 +136,7 @@
         document.removeEventListener('mousemove', onMouseMove);
         document.removeEventListener('mouseup', onMouseUp);
 
+        onPageActive(); // Активация страницы
         window.form.getAddressFromPin();
       };
 
@@ -151,7 +149,7 @@
     window.map.posterArr = cardsArray;
 
     // Активация страницы и претаскивание главной метки
-    window.map.clickMainPin();
+    clickMainPin();
   };
 
   window.map.onError = function (errorMessage) {
