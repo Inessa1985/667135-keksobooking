@@ -196,7 +196,7 @@
     validateCapacity();
   };
 
-  var removeFormOnChange = function () {
+  var removeFormEvent = function () {
     checkinSelect.removeEventListener('change', onCheckinSelectChangeHandler);
     checkoutSelect.removeEventListener('change', onCheckoutSelectChangeHandler);
     capacitySelect.removeEventListener('change', validateCapacity);
@@ -210,7 +210,7 @@
     window.backend.save(new FormData(formContent), onSuccessForm, window.map.onError);
     mapFilters.reset();
     formContent.removeEventListener('submit', formSubmit);
-    removeFormOnChange();
+    removeFormEvent();
   };
 
   var formResetOnClick = function () {
@@ -218,7 +218,7 @@
     deactivatePage();
     mapFilters.reset();
     formReset.removeEventListener('click', formResetOnClick);
-    removeFormOnChange();
+    removeFormEvent();
   };
 
   // Функция подготовки формы к отправке
