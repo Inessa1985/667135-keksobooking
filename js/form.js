@@ -202,6 +202,8 @@
     capacitySelect.removeEventListener('change', validateCapacity);
     typeSelect.removeEventListener('change', typeSelectOnChange);
     roomsSelect.removeEventListener('change', roomsSelectOnChange);
+    formContent.removeEventListener('submit', formSubmit);
+    formReset.removeEventListener('click', formResetOnClick);
   };
 
   var formSubmit = function (evt) {
@@ -209,7 +211,6 @@
     window.map.isLoaded = false;
     window.backend.save(new FormData(formContent), onSuccessForm, window.map.onError);
     mapFilters.reset();
-    formContent.removeEventListener('submit', formSubmit);
     removeFormEvent();
   };
 
@@ -217,7 +218,6 @@
     window.map.isLoaded = false;
     deactivatePage();
     mapFilters.reset();
-    formReset.removeEventListener('click', formResetOnClick);
     removeFormEvent();
   };
 
@@ -237,12 +237,12 @@
     // Синхронизация "Время заезда" и "Время выезда"
     checkinSelect.addEventListener('change', onCheckinSelectChangeHandler);
     checkoutSelect.addEventListener('change', onCheckoutSelectChangeHandler);
+
+    // Отправка формы
+    formContent.addEventListener('submit', formSubmit);
+
+    // Сброс формы кнопкой "очистить"
+    formReset.addEventListener('click', formResetOnClick);
   };
-
-  // Отправка формы
-  formContent.addEventListener('submit', formSubmit);
-
-  // Сброс формы кнопкой "очистить"
-  formReset.addEventListener('click', formResetOnClick);
 
 })();
