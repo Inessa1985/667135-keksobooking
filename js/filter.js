@@ -21,12 +21,12 @@
     }
   };
 
-  var mapFilters = document.querySelector('.map__filters');
   var filterType = document.querySelector('#housing-type');
   var filterPrice = document.querySelector('#housing-price');
   var filterRooms = document.querySelector('#housing-rooms');
   var filterGuests = document.querySelector('#housing-guests');
   var filterFeatures = document.querySelectorAll('.map__checkbox');
+  var similarListElement = document.querySelector('.map__pins');
   var adverts = [];
 
   var onHousingTypeChange = function (advert) {
@@ -72,21 +72,18 @@
     return true;
   };
 
-  var updateAdvert = function () {
-
+  window.filter.updateAdvert = function () {
+    adverts = window.map.posterArr.slice();
     var filteredAdverts = adverts.filter(onHousingTypeChange)
                                  .filter(onHousingPriceChange)
                                  .filter(onHousingRoomsChange)
                                  .filter(onHousingGuestChange)
                                  .filter(onHousingFeaturesChange);
 
-    window.map.erasePromoCard();
-    window.form.removeMapPins();
-    window.pin.createPinsFragment(filteredAdverts);
+    window.map.erasePromoCard(); // Удаляет карточку объявления
+    window.form.removeMapPins(); // Удаляет пин-элемент
+    similarListElement.appendChild(window.pin.createPinsFragment(filteredAdverts)); // Добавляет пин-элемент
+    window.map.pinClickHandler(filteredAdverts); // Добавляет карточку объявления по клику на пин-элемент
   };
-
-
-  // Добавляет обработчик на форму с фильтрами для устранения дребезга
-  mapFilters.addEventListener('change', window.debounce(updateAdvert));
 
 })();
