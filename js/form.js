@@ -34,8 +34,7 @@
   var formReset = formContent.querySelector('.ad-form__reset'); // Находит кнопку для сброса формы отправки объявления
   var formElementList = formContent.querySelectorAll('fieldset'); // Находит поля формы для отправки объявления
   var mapFilters = document.querySelector('.map__filters');
-  var mapFilterElementSelect = mapFilters.querySelectorAll('.map__filter');
-  var mapFilterFeatures = mapFilters.querySelector('.map__features');
+
 
   // Функция для деактивации элементов формы в изначальном состоянии
   window.form.disableFormElements = function (arr) {
@@ -178,10 +177,6 @@
     // Деактивация полей нижней формы объявления
     window.form.disableFormElements(formElementList);
 
-    // Деактивация полей блока фильтрации
-    window.form.disableFormElements(mapFilterElementSelect);
-    mapFilterFeatures.disabled = 'true';
-
   };
 
   var onSuccessForm = function () {
@@ -189,6 +184,19 @@
     successPopup.addEventListener('keydown', onPopupEscPress);
     successPopup.addEventListener('click', closePopup);
     deactivatePage();
+  };
+
+  var formSubmit = function (evt) {
+    evt.preventDefault();
+    window.backend.save(new FormData(formContent), onSuccessForm, window.map.onError);
+    mapFilters.removeEventListener('change', window.filter.updateAdvert);
+    formContent.removeEventListener('submit', formSubmit);
+  };
+
+  var formResetOnClick = function () {
+    deactivatePage();
+    mapFilters.removeEventListener('change', window.filter.updateAdvert);
+    formReset.removeEventListener('click', formResetOnClick);
   };
 
   // Функция подготовки формы к отправке
@@ -215,16 +223,9 @@
   };
 
   // Отправка формы
-  formContent.addEventListener('submit', function (evt) {
-    evt.preventDefault();
-    window.backend.save(new FormData(formContent), onSuccessForm, window.map.onError);
-    window.map.clickMainPin();
-  });
+  formContent.addEventListener('submit', formSubmit);
 
   // Сброс формы кнопкой "очистить"
-  formReset.addEventListener('click', function () {
-    deactivatePage();
-    window.map.clickMainPin();
-  });
+  formReset.addEventListener('click', formResetOnClick);
 
 })();

@@ -72,7 +72,7 @@
   var onPageActive = function () {
     enablePage(window.map.posterArr); // Активация сраницы
     window.map.pinClickHandler(window.map.posterArr); // Добавляет карточку объявления по клику на пин-элемент
-    mainPin.removeEventListener('mouseup', onPageActive);
+    // mainPin.removeEventListener('mouseup', onPageActive);
   };
 
   // Функция взаимодействия страницы и главной метки
@@ -152,7 +152,6 @@
 
     // Активация страницы и претаскивание главной метки
     window.map.clickMainPin();
-
   };
 
   window.map.onError = function (errorMessage) {
