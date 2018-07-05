@@ -74,6 +74,7 @@
       }
     }
     capacitySelect.setCustomValidity(message);
+    capacitySelect.removeEventListener('change', validateCapacity);
   };
 
   // Синхронизация "Время заезда" и "Время выезда"
@@ -83,10 +84,12 @@
 
   var onCheckinSelectChangeHandler = function () {
     changeCheckTime(checkoutSelect, checkinSelect.selectedIndex);
+    checkinSelect.removeEventListener('change', onCheckinSelectChangeHandler);
   };
 
   var onCheckoutSelectChangeHandler = function () {
     changeCheckTime(checkinSelect, checkoutSelect.selectedIndex);
+    checkoutSelect.removeEventListener('change', onCheckoutSelectChangeHandler);
   };
 
   // Зависимость минимально допустимой цены предложения от типа жилья
@@ -186,16 +189,29 @@
     deactivatePage();
   };
 
+  var typeSelectOnChange = function () {
+    checkMinPrice(typeOptions, typeSelect);
+    typeSelect.removeEventListener('change', typeSelectOnChange);
+  };
+
+  var roomsSelectOnChange = function () {
+    selectedRooms = Number(roomsSelect.value);
+    validateCapacity();
+    roomsSelect.removeEventListener('change', roomsSelectOnChange);
+  };
+
   var formSubmit = function (evt) {
     evt.preventDefault();
+    window.map.isLoaded = false;
     window.backend.save(new FormData(formContent), onSuccessForm, window.map.onError);
-    mapFilters.removeEventListener('change', window.filter.updateAdvert);
+    mapFilters.reset();
     formContent.removeEventListener('submit', formSubmit);
   };
 
   var formResetOnClick = function () {
+    window.map.isLoaded = false;
     deactivatePage();
-    mapFilters.removeEventListener('change', window.filter.updateAdvert);
+    mapFilters.reset();
     formReset.removeEventListener('click', formResetOnClick);
   };
 
@@ -205,17 +221,12 @@
     window.form.getAddressFromPin();
 
     // Проверка цены для дефолтного значения типа жилья
-    typeSelect.addEventListener('change', function () {
-      checkMinPrice(typeOptions, typeSelect);
-    });
+    typeSelect.addEventListener('change', typeSelectOnChange);
 
     // Синхронизация "Количество комнат" и "Количество мест" (Валидация формы)
     validateCapacity();
     capacitySelect.addEventListener('change', validateCapacity);
-    roomsSelect.addEventListener('change', function () {
-      selectedRooms = Number(roomsSelect.value);
-      validateCapacity();
-    });
+    roomsSelect.addEventListener('change', roomsSelectOnChange);
 
     // Синхронизация "Время заезда" и "Время выезда"
     checkinSelect.addEventListener('change', onCheckinSelectChangeHandler);

@@ -15,6 +15,7 @@
   var formElementList = formContent.querySelectorAll('fieldset'); // Находит поля формы для отправки объявления
   var mainPin = document.querySelector('.map__pin--main');
   var mapFilters = document.querySelector('.map__filters');
+  window.map.isLoaded = false;
 
   // Функция возвращает активное состояние элементам формы в изначальное состояние
   var enableFormElements = function (arr) {
@@ -41,15 +42,6 @@
     });
   };
 
-  // Функция для активация страницы
-  var enablePage = function (addArray) {
-    map.classList.remove('map--faded'); // У блока .map убирает класс .map--faded
-    enableFormElements(formElementList); // Активация нижней формы объявления
-    formContent.classList.remove('ad-form--disabled'); // У блока .ad-form убирает класс .ad-form--disabled (Активация формы объявления)
-    similarListElement.appendChild(window.pin.createPinsFragment(addArray)); // Добавляет на карту фрагменты с маркерами
-    mapFilters.addEventListener('change', window.debounce(window.filter.updateAdvert)); // Добавляет обработчик на форму с фильтрами для устранения дребезга
-  };
-
   // Метод для отрисовки карточки предложения по клику на соответствующий пин
   var pinElementAddHandler = function (element, addObject) {
     element.addEventListener('click', function () {
@@ -67,11 +59,17 @@
     }
   };
 
+  // Функция для активация страницы
+  var enablePage = function () {
+    window.map.isLoaded = true;
 
-  // Метод активации сраницы при "перетаскивании" главной метки адреса (.map__pin--main)
-  var onPageActive = function () {
-    enablePage(window.map.posterArr); // Активация сраницы
+    map.classList.remove('map--faded'); // У блока .map убирает класс .map--faded
+    enableFormElements(formElementList); // Активация нижней формы объявления
+    formContent.classList.remove('ad-form--disabled'); // У блока .ad-form убирает класс .ad-form--disabled (Активация формы объявления)
+    similarListElement.appendChild(window.pin.createPinsFragment(window.map.posterArr)); // Добавляет на карту фрагменты с маркерами
     window.map.pinClickHandler(window.map.posterArr); // Добавляет карточку объявления по клику на пин-элемент
+    mapFilters.addEventListener('change', window.debounce(window.filter.updateAdvert)); // Добавляет обработчик на форму с фильтрами для устранения дребезга
+    window.form.prepareForm(); // Подготовка формы к отправке
   };
 
   // Функция взаимодействия страницы и главной метки
@@ -136,8 +134,11 @@
         document.removeEventListener('mousemove', onMouseMove);
         document.removeEventListener('mouseup', onMouseUp);
 
-        onPageActive(); // Активация страницы
         window.form.getAddressFromPin();
+
+        if (!window.map.isLoaded) {
+          enablePage();
+        }
       };
 
       document.addEventListener('mousemove', onMouseMove);
@@ -166,9 +167,6 @@
 
   // Функция для инициализации страницы
   var init = function () {
-
-    // Подготовка формы к отправке
-    window.form.prepareForm();
 
     // Деактивация нижней формы объявления
     window.form.disableFormElements(formElementList);
