@@ -27,7 +27,6 @@
   var filterGuests = document.querySelector('#housing-guests');
   var filterFeatures = document.querySelectorAll('.map__checkbox');
   var similarListElement = document.querySelector('.map__pins');
-  // var mapFilters = document.querySelector('.map__filters');
   var adverts = [];
 
   var onHousingTypeChange = function (advert) {
@@ -85,7 +84,6 @@
     window.form.removeMapPins(); // Удаляет пин-элемент
     similarListElement.appendChild(window.pin.createPinsFragment(filteredAdverts)); // Добавляет пин-элемент
     window.map.pinClickHandler(filteredAdverts); // Добавляет карточку объявления по клику на пин-элемент
-    // mapFilters.removeEventListener('change', window.debounce(window.filter.updateAdvert)); // Удаляет обработчик на форму с фильтрами
   };
 
 })();

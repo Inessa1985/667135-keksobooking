@@ -74,7 +74,7 @@
       }
     }
     capacitySelect.setCustomValidity(message);
-    capacitySelect.removeEventListener('change', validateCapacity);
+
   };
 
   // Синхронизация "Время заезда" и "Время выезда"
@@ -84,12 +84,10 @@
 
   var onCheckinSelectChangeHandler = function () {
     changeCheckTime(checkoutSelect, checkinSelect.selectedIndex);
-    checkinSelect.removeEventListener('change', onCheckinSelectChangeHandler);
   };
 
   var onCheckoutSelectChangeHandler = function () {
     changeCheckTime(checkinSelect, checkoutSelect.selectedIndex);
-    checkoutSelect.removeEventListener('change', onCheckoutSelectChangeHandler);
   };
 
   // Зависимость минимально допустимой цены предложения от типа жилья
@@ -191,12 +189,18 @@
 
   var typeSelectOnChange = function () {
     checkMinPrice(typeOptions, typeSelect);
-    typeSelect.removeEventListener('change', typeSelectOnChange);
   };
 
   var roomsSelectOnChange = function () {
     selectedRooms = Number(roomsSelect.value);
     validateCapacity();
+  };
+
+  var removeFormOnChange = function () {
+    checkinSelect.removeEventListener('change', onCheckinSelectChangeHandler);
+    checkoutSelect.removeEventListener('change', onCheckoutSelectChangeHandler);
+    capacitySelect.removeEventListener('change', validateCapacity);
+    typeSelect.removeEventListener('change', typeSelectOnChange);
     roomsSelect.removeEventListener('change', roomsSelectOnChange);
   };
 
@@ -206,6 +210,7 @@
     window.backend.save(new FormData(formContent), onSuccessForm, window.map.onError);
     mapFilters.reset();
     formContent.removeEventListener('submit', formSubmit);
+    removeFormOnChange();
   };
 
   var formResetOnClick = function () {
@@ -213,6 +218,7 @@
     deactivatePage();
     mapFilters.reset();
     formReset.removeEventListener('click', formResetOnClick);
+    removeFormOnChange();
   };
 
   // Функция подготовки формы к отправке
