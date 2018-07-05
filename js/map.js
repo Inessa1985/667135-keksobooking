@@ -76,7 +76,7 @@
   };
 
   // Функция взаимодействия страницы и главной метки
-  var clickMainPin = function () {
+  window.map.clickMainPin = function () {
     // Активация страницы
     mainPin.addEventListener('mouseup', onPageActive);
 
@@ -151,7 +151,7 @@
     window.map.posterArr = cardsArray;
 
     // Активация страницы и претаскивание главной метки
-    clickMainPin();
+    window.map.clickMainPin();
 
   };
 

@@ -218,11 +218,13 @@
   formContent.addEventListener('submit', function (evt) {
     evt.preventDefault();
     window.backend.save(new FormData(formContent), onSuccessForm, window.map.onError);
+    window.map.clickMainPin();
   });
 
   // Сброс формы кнопкой "очистить"
   formReset.addEventListener('click', function () {
     deactivatePage();
+    window.map.clickMainPin();
   });
 
 })();
