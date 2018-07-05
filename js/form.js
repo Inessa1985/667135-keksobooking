@@ -33,6 +33,10 @@
   var successPopup = document.querySelector('.success'); // Находит блок сообщения об успешном размещении объевления
   var formReset = formContent.querySelector('.ad-form__reset'); // Находит кнопку для сброса формы отправки объявления
   var formElementList = formContent.querySelectorAll('fieldset'); // Находит поля формы для отправки объявления
+  var mapFilters = document.querySelector('.map__filters');
+  var mapFilterElementSelect = mapFilters.querySelectorAll('.map__filter');
+  var mapFilterFeatures = mapFilters.querySelector('.map__features');
+  // var mapFilterElementFeature = mapFilterFeatures.querySelectorAll('.map__feature');
 
   // Функция для деактивации элементов формы в изначальном состоянии
   window.form.disableFormElements = function (arr) {
@@ -174,6 +178,13 @@
 
     // Деактивация полей нижней формы объявления
     window.form.disableFormElements(formElementList);
+
+    // Деактивация полей блока фильтрации
+    window.form.disableFormElements(mapFilterElementSelect);
+    mapFilterFeatures.disabled = 'true';
+
+    // Удаляет обработчик на форму с фильтрами
+    mapFilters.removeEventListener('change', window.filter.updateAdvert);
 
   };
 
