@@ -72,13 +72,13 @@
     return true;
   };
 
-  window.filter.updateAdvert = function () {
+  var updateAdvert = function () {
 
-    var filteredAdverts = adverts.filter(onHousingTypeChange).
-                                  filter(onHousingPriceChange).
-                                  filter(onHousingRoomsChange).
-                                  filter(onHousingGuestChange).
-                                  filter(onHousingFeaturesChange);
+    var filteredAdverts = adverts.filter(onHousingTypeChange)
+                                 .filter(onHousingPriceChange)
+                                 .filter(onHousingRoomsChange)
+                                 .filter(onHousingGuestChange)
+                                 .filter(onHousingFeaturesChange);
 
     window.map.erasePromoCard();
     window.form.removeMapPins();
@@ -87,6 +87,6 @@
 
 
   // Добавляет обработчик на форму с фильтрами для устранения дребезга
-  mapFilters.addEventListener('change', window.debounce(window.filter.updateAdvert()));
+  mapFilters.addEventListener('change', window.debounce(updateAdvert));
 
 })();

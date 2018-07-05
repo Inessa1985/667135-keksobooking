@@ -152,8 +152,6 @@
     // Активация страницы и претаскивание главной метки
     clickMainPin();
 
-    // Фильтрация объявлений
-    window.filter.updateAdvert();
   };
 
   window.map.onError = function (errorMessage) {
@@ -179,7 +177,6 @@
 
     // Скачивание массива с сервера и активация страницы, пертаскивание главной метки
     window.backend.load(onSuccess, window.map.onError);
-
 
   };
 
