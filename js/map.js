@@ -41,15 +41,15 @@
     }
   };
 
-  var openCardPopup = function () {
-    var previousCard = map.querySelector('.map__card');
+  var openCardPopup = function (popup) {
+    var card = popup;
 
-    if (previousCard) {
+    if (card) {
       document.addEventListener('keydown', onCardEscPress);
     }
   };
 
-  var closeCardPopup = function () {
+  var setCardCloseHandler = function () {
     var cardCloseButton = map.querySelector('.popup__close');
     var previousCard = map.querySelector('.map__card');
 
@@ -57,7 +57,7 @@
       window.map.erasePromoCard();
     });
 
-    openCardPopup();
+    openCardPopup(previousCard);
     previousCard.addEventListener('keydown', onCardEscPress);
   };
 
@@ -65,7 +65,7 @@
     var activePin = document.querySelector('.map__pin--active');
 
     if (activePin) {
-      activePin.classList.remove();
+      activePin.classList.remove('map__pin--active');
     }
     elementPin.classList.add('map__pin--active'); // Пину добавляет класс .map__pin--active
   };
@@ -77,7 +77,7 @@
       addActiveOnPin(element); // Пину добавляет класс .map__pin--active
       window.map.erasePromoCard(); // Удаляет предыдущую карточку объявления с описанием
       map.appendChild(window.card.generateInfoPromo(addObject)); // Добавляет карточку объявления с описанием
-      closeCardPopup(); // Закрывает карточку объявления с описанием
+      setCardCloseHandler(); // Закрывает карточку объявления с описанием
     });
   };
 
