@@ -21,12 +21,12 @@
   };
 
   // Функция создания фрагмента с маркерами на карте
-  window.pin.createPinsFragment = function (arr) {
+  window.pin.createPinsFragment = function (pinFragments) {
     var fragment = document.createDocumentFragment();
-    var takeNumber = arr.length > MAX_ADD_PINS ? MAX_ADD_PINS : arr.length;
+    var takeNumber = pinFragments.length > MAX_ADD_PINS ? MAX_ADD_PINS : pinFragments.length;
 
     for (var i = 0; i < takeNumber; i++) {
-      fragment.appendChild(createPinElement(arr[i]));
+      fragment.appendChild(createPinElement(pinFragments[i]));
     }
 
     return fragment;

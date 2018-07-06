@@ -37,9 +37,9 @@
 
 
   // Функция для деактивации элементов формы в изначальном состоянии
-  window.form.disableFormElements = function (arr) {
-    for (var i = 0; i < arr.length; i++) {
-      arr[i].disabled = 'true';
+  window.form.disableFormElements = function (formElements) {
+    for (var i = 0; i < formElements.length; i++) {
+      formElements[i].disabled = 'true';
     }
   };
 
@@ -74,7 +74,6 @@
       }
     }
     capacitySelect.setCustomValidity(message);
-
   };
 
   // Синхронизация "Время заезда" и "Время выезда"
@@ -82,11 +81,11 @@
     checkField.selectedIndex = index;
   };
 
-  var onCheckinSelectChangeHandler = function () {
+  var onCheckinSelectChange = function () {
     changeCheckTime(checkoutSelect, checkinSelect.selectedIndex);
   };
 
-  var onCheckoutSelectChangeHandler = function () {
+  var onCheckoutSelectChange = function () {
     changeCheckTime(checkinSelect, checkoutSelect.selectedIndex);
   };
 
@@ -115,14 +114,14 @@
 
 
   // Функции добавляют в поле адреса координаты метки
-  var isMapActive = function () {
+  var activateMap = function () {
     return !(map.classList.contains('map--faded'));
   };
 
   var calculateAddress = function () {
     var pinX = parseInt(mainPin.style.left, 10) + MAIN_PIN_WIDTH / 2;
     var pinY = parseInt(mainPin.style.top, 10) + MAIN_PIN_HEIGHT / 2;
-    if (isMapActive()) {
+    if (activateMap()) {
       pinY += MAIN_PIN_HEIGHT / 2 + MAIN_PIN_END_HEIGHT;
     }
     return Math.round(pinX) + ', ' + Math.round(pinY);
@@ -196,29 +195,31 @@
     validateCapacity();
   };
 
-  var removeFormEvent = function () {
-    checkinSelect.removeEventListener('change', onCheckinSelectChangeHandler);
-    checkoutSelect.removeEventListener('change', onCheckoutSelectChangeHandler);
+  var onRemoveFormEvent = function () {
+    checkinSelect.removeEventListener('change', onCheckinSelectChange);
+    checkoutSelect.removeEventListener('change', onCheckoutSelectChange);
     capacitySelect.removeEventListener('change', validateCapacity);
     typeSelect.removeEventListener('change', typeSelectOnChange);
     roomsSelect.removeEventListener('change', roomsSelectOnChange);
-    formContent.removeEventListener('submit', formSubmit);
-    formReset.removeEventListener('click', formResetOnClick);
+    formContent.removeEventListener('submit', onFormSubmit);
+    formReset.removeEventListener('click', onFormReset);
   };
 
-  var formSubmit = function (evt) {
+  var onFormSubmit = function (evt) {
     evt.preventDefault();
     window.map.isLoaded = false;
     window.backend.save(new FormData(formContent), onSuccessForm, window.map.onError);
     mapFilters.reset();
-    removeFormEvent();
+    onRemoveFormEvent();
+    window.form.getAddressFromPin();
   };
 
-  var formResetOnClick = function () {
+  var onFormReset = function () {
     window.map.isLoaded = false;
     deactivatePage();
     mapFilters.reset();
-    removeFormEvent();
+    onRemoveFormEvent();
+    window.form.getAddressFromPin();
   };
 
   // Функция подготовки формы к отправке
@@ -235,14 +236,14 @@
     roomsSelect.addEventListener('change', roomsSelectOnChange);
 
     // Синхронизация "Время заезда" и "Время выезда"
-    checkinSelect.addEventListener('change', onCheckinSelectChangeHandler);
-    checkoutSelect.addEventListener('change', onCheckoutSelectChangeHandler);
+    checkinSelect.addEventListener('change', onCheckinSelectChange);
+    checkoutSelect.addEventListener('change', onCheckoutSelectChange);
 
     // Отправка формы
-    formContent.addEventListener('submit', formSubmit);
+    formContent.addEventListener('submit', onFormSubmit);
 
     // Сброс формы кнопкой "очистить"
-    formReset.addEventListener('click', formResetOnClick);
+    formReset.addEventListener('click', onFormReset);
   };
 
 })();

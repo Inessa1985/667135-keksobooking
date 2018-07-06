@@ -5,19 +5,19 @@
   window.filter = {};
 
   var PRICE_RANGES = {
-    low: {
-      min: 0,
-      max: 10000
+    LOW: {
+      MIN: 0,
+      MAX: 10000
     },
 
-    middle: {
-      min: 10000,
-      max: 50000
+    MIDDLE: {
+      MIN: 10000,
+      MAX: 50000
     },
 
-    hight: {
-      min: 50000,
-      max: Infinity
+    HIGHT: {
+      MIN: 50000,
+      MAX: Infinity
     }
   };
 
@@ -27,43 +27,43 @@
   var filterGuests = document.querySelector('#housing-guests');
   var filterFeatures = document.querySelectorAll('.map__checkbox');
   var similarListElement = document.querySelector('.map__pins');
-  var adverts = [];
 
-  var onHousingTypeChange = function (advert) {
+
+  var filterTypeChange = function (advert) {
     if (filterType[filterType.selectedIndex].value === 'any') {
       return true;
     }
     return advert.offer.type === filterType[filterType.selectedIndex].value;
   };
 
-  var onHousingPriceChange = function (advert) {
+  var filterPriceChange = function (advert) {
     switch (filterPrice[filterPrice.selectedIndex].value) {
       case 'low':
-        return advert.offer.price <= PRICE_RANGES.low.max;
+        return advert.offer.price <= PRICE_RANGES.LOW.MAX;
       case 'middle':
-        return advert.offer.price >= PRICE_RANGES.middle.min && advert.offer.price <= PRICE_RANGES.middle.max;
+        return advert.offer.price >= PRICE_RANGES.MIDDLE.MIN && advert.offer.price <= PRICE_RANGES.MIDDLE.MAX;
       case 'high':
-        return advert.offer.price >= PRICE_RANGES.hight.min;
+        return advert.offer.price >= PRICE_RANGES.HIGHT.MIN;
       default:
         return true;
     }
   };
 
-  var onHousingRoomsChange = function (advert) {
+  var filterRoomsChange = function (advert) {
     if (filterRooms[filterRooms.selectedIndex].value === 'any') {
       return true;
     }
     return advert.offer.rooms === parseInt(filterRooms[filterRooms.selectedIndex].value, 10);
   };
 
-  var onHousingGuestChange = function (advert) {
+  var filterGuestChange = function (advert) {
     if (filterGuests[filterGuests.selectedIndex].value === 'any') {
       return true;
     }
     return advert.offer.guests === parseInt(filterGuests[filterGuests.selectedIndex].value, 10);
   };
 
-  var onHousingFeaturesChange = function (advert) {
+  var filterFeaturesChange = function (advert) {
     for (var i = 0; i < filterFeatures.length; i++) {
       if (filterFeatures[i].checked && advert.offer.features.indexOf(filterFeatures[i].value) < 0) {
         return false;
@@ -73,12 +73,11 @@
   };
 
   window.filter.updateAdvert = function () {
-    adverts = window.map.posterArr.slice();
-    var filteredAdverts = adverts.filter(onHousingTypeChange)
-                                 .filter(onHousingPriceChange)
-                                 .filter(onHousingRoomsChange)
-                                 .filter(onHousingGuestChange)
-                                 .filter(onHousingFeaturesChange);
+    var filteredAdverts = window.map.posterArrays.filter(filterTypeChange)
+                                              .filter(filterPriceChange)
+                                              .filter(filterRoomsChange)
+                                              .filter(filterGuestChange)
+                                              .filter(filterFeaturesChange);
 
     window.map.erasePromoCard(); // Удаляет карточку объявления
     window.form.removeMapPins(); // Удаляет пин-элемент
