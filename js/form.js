@@ -114,14 +114,14 @@
 
 
   // Функции добавляют в поле адреса координаты метки
-  var activateMap = function () {
+  var checkMapState = function () {
     return !(map.classList.contains('map--faded'));
   };
 
   var calculateAddress = function () {
     var pinX = parseInt(mainPin.style.left, 10) + MAIN_PIN_WIDTH / 2;
     var pinY = parseInt(mainPin.style.top, 10) + MAIN_PIN_HEIGHT / 2;
-    if (activateMap()) {
+    if (checkMapState()) {
       pinY += MAIN_PIN_HEIGHT / 2 + MAIN_PIN_END_HEIGHT;
     }
     return Math.round(pinX) + ', ' + Math.round(pinY);

@@ -13,7 +13,6 @@
   var similarListElement = document.querySelector('.map__pins');
   var formContent = document.querySelector('.ad-form'); // Находит форму для отправки объявления
   var formElementList = formContent.querySelectorAll('fieldset'); // Находит поля формы для отправки объявления
-  var addressInput = formContent.querySelector('.ad-form__element--address'); // Находит поле адреса в нижней форме для отправки объявления
   var mainPin = document.querySelector('.map__pin--main');
   var mapFilters = document.querySelector('.map__filters');
   var ESC_KEYCODE = 27;
@@ -39,7 +38,6 @@
   var onCardEscPress = function (evt) {
     if (evt.keyCode === ESC_KEYCODE) {
       window.map.erasePromoCard();
-      document.removeEventListener('keydown', onCardEscPress);
     }
   };
 
@@ -98,9 +96,8 @@
     map.classList.remove('map--faded'); // У блока .map убирает класс .map--faded
     enableFormElements(formElementList); // Активация нижней формы объявления
     formContent.classList.remove('ad-form--disabled'); // У блока .ad-form убирает класс .ad-form--disabled (Активация формы объявления)
-    addressInput.disabled = 'true'; // Деактивирует поле адреса в форме
-    similarListElement.appendChild(window.pin.createPinsFragment(window.map.posterArrays)); // Добавляет на карту фрагменты с маркерами
-    window.map.pinClickHandler(window.map.posterArrays); // Добавляет карточку объявления по клику на пин-элемент
+    similarListElement.appendChild(window.pin.createPinsFragment(window.map.ads)); // Добавляет на карту фрагменты с маркерами
+    window.map.pinClickHandler(window.map.ads); // Добавляет карточку объявления по клику на пин-элемент
     mapFilters.addEventListener('change', window.debounce(window.filter.updateAdvert)); // Добавляет обработчик на форму с фильтрами для устранения дребезга
     window.form.prepareForm(); // Подготовка формы к отправке
   };
@@ -179,7 +176,7 @@
   };
 
   var onSuccess = function (cardsArray) {
-    window.map.posterArrays = cardsArray;
+    window.map.ads = cardsArray;
 
     // Активация страницы и претаскивание главной метки
     clickMainPin();

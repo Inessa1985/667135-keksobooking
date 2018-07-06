@@ -73,7 +73,7 @@
   };
 
   window.filter.updateAdvert = function () {
-    var filteredAdverts = window.map.posterArrays.filter(filterTypeChange)
+    var filteredAdverts = window.map.ads.filter(filterTypeChange)
                                               .filter(filterPriceChange)
                                               .filter(filterRoomsChange)
                                               .filter(filterGuestChange)
