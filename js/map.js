@@ -41,14 +41,6 @@
     }
   };
 
-  var openCardPopup = function (popup) {
-    var card = popup;
-
-    if (card) {
-      document.addEventListener('keydown', onCardEscPress);
-    }
-  };
-
   var setCardCloseHandler = function () {
     var cardCloseButton = map.querySelector('.popup__close');
     var previousCard = map.querySelector('.map__card');
@@ -57,8 +49,9 @@
       window.map.erasePromoCard();
     });
 
-    openCardPopup(previousCard);
-    previousCard.addEventListener('keydown', onCardEscPress);
+    if (previousCard) {
+      document.addEventListener('keydown', onCardEscPress);
+    }
   };
 
   var addActiveOnPin = function (elementPin) {

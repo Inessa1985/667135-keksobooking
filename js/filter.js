@@ -4,7 +4,7 @@
 
   window.filter = {};
 
-  var PRICE_RANGES = {
+  var PRICE_RANGE = {
     LOW: {
       MIN: 0,
       MAX: 10000
@@ -39,11 +39,11 @@
   var filterPriceChange = function (advert) {
     switch (filterPrice[filterPrice.selectedIndex].value) {
       case 'low':
-        return advert.offer.price <= PRICE_RANGES.LOW.MAX;
+        return advert.offer.price <= PRICE_RANGE.LOW.MAX;
       case 'middle':
-        return advert.offer.price >= PRICE_RANGES.MIDDLE.MIN && advert.offer.price <= PRICE_RANGES.MIDDLE.MAX;
+        return advert.offer.price >= PRICE_RANGE.MIDDLE.MIN && advert.offer.price <= PRICE_RANGE.MIDDLE.MAX;
       case 'high':
-        return advert.offer.price >= PRICE_RANGES.HIGHT.MIN;
+        return advert.offer.price >= PRICE_RANGE.HIGHT.MIN;
       default:
         return true;
     }
